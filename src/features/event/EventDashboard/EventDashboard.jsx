@@ -55,15 +55,26 @@ const eventDashboard = [
 ];
 
 class EventDashboard extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      events: eventDashboard,
+      isOpen: false,
+    };
+  }
+
   render() {
+    const { events, isOpen } = this.state;
+
     return (
       <Grid>
         <Grid.Column width={10}>
-          <EventList events={eventDashboard} />
+          <EventList events={events} />
         </Grid.Column>
         <Grid.Column width={6}>
           <Button positive content="Create Event" />
-          <EventForm />
+          {isOpen && <EventForm />}
         </Grid.Column>
       </Grid>
     );
