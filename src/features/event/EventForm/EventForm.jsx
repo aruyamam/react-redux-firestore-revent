@@ -2,13 +2,33 @@ import React, { Component } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
 
 class EventForm extends Component {
+  state = {
+    event: {
+      title: '',
+      date: '',
+      city: '',
+      venue: '',
+      hostedBy: '',
+    },
+  };
+
   onFormSubmit = (evt) => {
     evt.preventDefault();
-    console.log(this.refs.title.value);
+    console.log(this.state.event);
+  };
+
+  onInputChange = (evt) => {
+    const newEvent = this.state.event;
+    newEvent[evt.target.name] = evt.target.value;
+
+    this.setState({
+      event: newEvent,
+    });
   };
 
   render() {
     const { handleCancel } = this.props;
+    const { event } = this.state;
 
     return (
       <Segment>
@@ -16,31 +36,62 @@ class EventForm extends Component {
           <Form.Field>
             <label htmlFor="title">
               Event Title
-              <input ref="title" type="text" id="title" placeholder="Event Title" />
+              <input
+                onChange={this.onInputChange}
+                type="text"
+                id="title"
+                name="title"
+                value={event.title}
+                placeholder="Event Title"
+              />
             </label>
           </Form.Field>
           <Form.Field>
             <label htmlFor="date">
               Event Date
-              <input type="date" id="date" placeholder="Event Date" />
+              <input
+                onChange={this.onInputChange}
+                type="date"
+                id="date"
+                name="date"
+                placeholder="Event Date"
+              />
             </label>
           </Form.Field>
           <Form.Field>
             <label htmlFor="city">
               City
-              <input type="text" id="city" placeholder="City event is taking place" />
+              <input
+                onChange={this.onInputChange}
+                type="text"
+                id="city"
+                name="city"
+                placeholder="City event is taking place"
+              />
             </label>
           </Form.Field>
           <Form.Field>
             <label htmlFor="venue">
               Venue
-              <input type="text" id="venue" placeholder="Enter the Venue of the event" />
+              <input
+                onChange={this.onInputChange}
+                type="text"
+                id="venue"
+                name="venue"
+                placeholder="Enter the Venue of the event"
+              />
             </label>
           </Form.Field>
           <Form.Field>
-            <label htmlFor="host">
+            <label htmlFor="hostedBy">
               Hosted By
-              <input type="text" id="host" placeholder="Enter the name of person hosting" />
+              <input
+                onChange={this.onInputChange}
+                type="text"
+                id="hostedBy"
+                name="hostedBy"
+                placeholder="Enter the name of person hosting"
+              />
             </label>
           </Form.Field>
           <Button type="submit" positive>
