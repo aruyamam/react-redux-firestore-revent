@@ -1,16 +1,36 @@
 import React, { Component } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
 
+const emptyEvent = {
+  title: '',
+  date: '',
+  city: '',
+  venue: '',
+  hostedBy: '',
+};
+
 class EventForm extends Component {
   state = {
-    event: {
-      title: '',
-      date: '',
-      city: '',
-      venue: '',
-      hostedBy: '',
-    },
+    event: emptyEvent,
   };
+
+  componentDidMount() {
+    const { selectedEvent } = this.props;
+
+    if (selectedEvent !== null) {
+      this.setState({
+        event: selectedEvent,
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedEvent !== this.props.selectedEvent) {
+      this.setState({
+        event: nextProps.selectedEvent || emptyEvent,
+      });
+    }
+  }
 
   onFormSubmit = (evt) => {
     evt.preventDefault();
@@ -18,7 +38,7 @@ class EventForm extends Component {
   };
 
   onInputChange = (evt) => {
-    const newEvent = this.state.event;
+    const { event: newEvent } = this.state;
     newEvent[evt.target.name] = evt.target.value;
 
     this.setState({
@@ -54,6 +74,7 @@ class EventForm extends Component {
                 type="date"
                 id="date"
                 name="date"
+                value={event.date}
                 placeholder="Event Date"
               />
             </label>
@@ -66,6 +87,7 @@ class EventForm extends Component {
                 type="text"
                 id="city"
                 name="city"
+                value={event.city}
                 placeholder="City event is taking place"
               />
             </label>
@@ -78,6 +100,7 @@ class EventForm extends Component {
                 type="text"
                 id="venue"
                 name="venue"
+                value={event.venue}
                 placeholder="Enter the Venue of the event"
               />
             </label>
@@ -90,6 +113,7 @@ class EventForm extends Component {
                 type="text"
                 id="hostedBy"
                 name="hostedBy"
+                value={event.hostedBy}
                 placeholder="Enter the name of person hosting"
               />
             </label>
