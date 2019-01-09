@@ -5,129 +5,140 @@ import EventList from '../EventList/EventList';
 import EventForm from '../EventForm/EventForm';
 
 const eventDashboard = [
-  {
-    id: '1',
-    title: 'Trip to Tower of London',
-    date: '2018-03-27',
-    category: 'culture',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.',
-    city: 'London, UK',
-    venue: "Tower of London, St Katharine's & Wapping, London",
-    hostedBy: 'Bob',
-    hostPhotoURL: 'https://randomuser.me/api/portraits/men/20.jpg',
-    attendees: [
-      {
-        id: 'a',
-        name: 'Bob',
-        photoURL: 'https://randomuser.me/api/portraits/men/20.jpg',
-      },
-      {
-        id: 'b',
-        name: 'Tom',
-        photoURL: 'https://randomuser.me/api/portraits/men/22.jpg',
-      },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Trip to Punch and Judy Pub',
-    date: '2018-03-28',
-    category: 'drinks',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.',
-    city: 'London, UK',
-    venue: 'Punch & Judy, Henrietta Street, London, UK',
-    hostedBy: 'Tom',
-    hostPhotoURL: 'https://randomuser.me/api/portraits/men/22.jpg',
-    attendees: [
-      {
-        id: 'b',
-        name: 'Tom',
-        photoURL: 'https://randomuser.me/api/portraits/men/22.jpg',
-      },
-      {
-        id: 'a',
-        name: 'Bob',
-        photoURL: 'https://randomuser.me/api/portraits/men/20.jpg',
-      },
-    ],
-  },
+   {
+      id: '1',
+      title: 'Trip to Tower of London',
+      date: '2018-03-27',
+      category: 'culture',
+      description:
+         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.',
+      city: 'London, UK',
+      venue: "Tower of London, St Katharine's & Wapping, London",
+      hostedBy: 'Bob',
+      hostPhotoURL: 'https://randomuser.me/api/portraits/men/20.jpg',
+      attendees: [
+         {
+            id: 'a',
+            name: 'Bob',
+            photoURL: 'https://randomuser.me/api/portraits/men/20.jpg',
+         },
+         {
+            id: 'b',
+            name: 'Tom',
+            photoURL: 'https://randomuser.me/api/portraits/men/22.jpg',
+         },
+      ],
+   },
+   {
+      id: '2',
+      title: 'Trip to Punch and Judy Pub',
+      date: '2018-03-28',
+      category: 'drinks',
+      description:
+         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.',
+      city: 'London, UK',
+      venue: 'Punch & Judy, Henrietta Street, London, UK',
+      hostedBy: 'Tom',
+      hostPhotoURL: 'https://randomuser.me/api/portraits/men/22.jpg',
+      attendees: [
+         {
+            id: 'b',
+            name: 'Tom',
+            photoURL: 'https://randomuser.me/api/portraits/men/22.jpg',
+         },
+         {
+            id: 'a',
+            name: 'Bob',
+            photoURL: 'https://randomuser.me/api/portraits/men/20.jpg',
+         },
+      ],
+   },
 ];
 
 class EventDashboard extends Component {
-  state = {
-    events: eventDashboard,
-    isOpen: false,
-    selectedEvent: null,
-  };
-
-  handleFormOpen = () => {
-    this.setState({
-      selectedEvent: null,
-      isOpen: true,
-    });
-  };
-
-  handleCancel = () => {
-    this.setState({ isOpen: false });
-  };
-
-  handleUpdateEvent = (updatedEvent) => {
-    const { events } = this.state;
-
-    this.setState({
-      events: events.map((event) => {
-        if (event.id === updatedEvent.id) {
-          return Object.assign({}, updatedEvent);
-        }
-        return event;
-      }),
+   state = {
+      events: eventDashboard,
       isOpen: false,
       selectedEvent: null,
-    });
-  };
+   };
 
-  handleOpenEvent = eventToOpen => () => {
-    this.setState({
-      selectedEvent: eventToOpen,
-      isOpen: true,
-    });
-  };
+   handleFormOpen = () => {
+      this.setState({
+         selectedEvent: null,
+         isOpen: true,
+      });
+   };
 
-  handleCreateEvent = (newEvent) => {
-    newEvent.id = cuid();
-    newEvent.hostPhotoURL = '/assets/user.png';
-    const updatedEvents = [...this.state.events, newEvent];
+   handleCancel = () => {
+      this.setState({ isOpen: false });
+   };
 
-    this.setState({
-      events: updatedEvents,
-      isOpen: false,
-    });
-  };
+   handleUpdateEvent = (updatedEvent) => {
+      const { events } = this.state;
 
-  render() {
-    const { events, isOpen, selectedEvent } = this.state;
+      this.setState({
+         events: events.map((event) => {
+            if (event.id === updatedEvent.id) {
+               return Object.assign({}, updatedEvent);
+            }
+            return event;
+         }),
+         isOpen: false,
+         selectedEvent: null,
+      });
+   };
 
-    return (
-      <Grid>
-        <Grid.Column width={10}>
-          <EventList onEventOpen={this.handleOpenEvent} events={events} />
-        </Grid.Column>
-        <Grid.Column width={6}>
-          <Button onClick={this.handleFormOpen} positive content="Create Event" />
-          {isOpen && (
-            <EventForm
-              updateEvent={this.handleUpdateEvent}
-              selectedEvent={selectedEvent}
-              createEvent={this.handleCreateEvent}
-              handleCancel={this.handleCancel}
-            />
-          )}
-        </Grid.Column>
-      </Grid>
-    );
-  }
+   handleOpenEvent = eventToOpen => () => {
+      this.setState({
+         selectedEvent: eventToOpen,
+         isOpen: true,
+      });
+   };
+
+   handleCreateEvent = (newEvent) => {
+      newEvent.id = cuid();
+      newEvent.hostPhotoURL = '/assets/user.png';
+      const updatedEvents = [...this.state.events, newEvent];
+
+      this.setState({
+         events: updatedEvents,
+         isOpen: false,
+      });
+   };
+
+   handleDeleteEvent = eventId => () => {
+      const updatedEvents = this.state.events.filter(e => e.id !== eventId);
+      this.setState({
+         events: updatedEvents,
+      });
+   };
+
+   render() {
+      const { events, isOpen, selectedEvent } = this.state;
+
+      return (
+         <Grid>
+            <Grid.Column width={10}>
+               <EventList
+                  deleteEvent={this.handleDeleteEvent}
+                  onEventOpen={this.handleOpenEvent}
+                  events={events}
+               />
+            </Grid.Column>
+            <Grid.Column width={6}>
+               <Button onClick={this.handleFormOpen} positive content="Create Event" />
+               {isOpen && (
+                  <EventForm
+                     updateEvent={this.handleUpdateEvent}
+                     selectedEvent={selectedEvent}
+                     createEvent={this.handleCreateEvent}
+                     handleCancel={this.handleCancel}
+                  />
+               )}
+            </Grid.Column>
+         </Grid>
+      );
+   }
 }
 
 export default EventDashboard;
