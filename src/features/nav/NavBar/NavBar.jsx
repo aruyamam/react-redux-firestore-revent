@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
 import { Button, Container, Menu } from 'semantic-ui-react';
+import { NavLink, Link } from 'react-router-dom';
 
 class NavBar extends Component {
+   state = {};
+
    render() {
       return (
          <Menu inverted fixed="top">
             <Container>
-               <Menu.Item header>
+               <Menu.Item as={Link} to="/" header>
                   <img src="assets/logo.png" alt="logo" className="logo" />
                   Re-events
                </Menu.Item>
-               <Menu.Item name="Events" />
+               <Menu.Item as={NavLink} to="/events" name="Events" />
+               <Menu.Item as={NavLink} to="/people" name="People" />
                <Menu.Item>
                   <Button
+                     as={Link}
+                     to="/createEvent"
                      floated="right"
                      positive
                      inverted
@@ -21,12 +27,7 @@ class NavBar extends Component {
                </Menu.Item>
                <Menu.Item position="right">
                   <Button basic inverted content="Login" />
-                  <Button
-                     basic
-                     inverted
-                     content="Sign Out"
-                     style={{ marginLeft: '0.5em' }}
-                  />
+                  <Button basic inverted content="Sign Out" style={{ marginLeft: '0.5em' }} />
                </Menu.Item>
             </Container>
          </Menu>
