@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Grid } from 'semantic-ui-react';
 import cuid from 'cuid';
 import EventList from '../EventList/EventList';
 import EventForm from '../EventForm/EventForm';
+import { createEvent, deleteEvent, updateEvent } from '../eventActions';
 
 const mapState = state => ({
    events: state.events,
 });
+
+const actions = {
+   createEvent,
+   deleteEvent,
+   updateEvent,
+};
 
 class EventDashboard extends Component {
    state = {
@@ -27,15 +35,8 @@ class EventDashboard extends Component {
    };
 
    handleUpdateEvent = (updatedEvent) => {
-      const { events } = this.state;
-
+      this.props.updateEvent(updatedEvent);
       this.setState({
-         events: events.map((event) => {
-            if (event.id === updatedEvent.id) {
-               return Object.assign({}, updatedEvent);
-            }
-            return event;
-         }),
          isOpen: false,
          selectedEvent: null,
       });
@@ -51,19 +52,14 @@ class EventDashboard extends Component {
    handleCreateEvent = (newEvent) => {
       newEvent.id = cuid();
       newEvent.hostPhotoURL = '/assets/user.png';
-      const updatedEvents = [...this.props.events, newEvent];
-
+      this.props.createEvent(newEvent);
       this.setState({
-         events: updatedEvents,
          isOpen: false,
       });
    };
 
    handleDeleteEvent = eventId => () => {
-      const updatedEvents = this.props.events.filter(e => e.id !== eventId);
-      this.setState({
-         events: updatedEvents,
-      });
+      this.props.deleteEvent(eventId);
    };
 
    render() {
@@ -95,4 +91,13 @@ class EventDashboard extends Component {
    }
 }
 
-export default connect(mapState)(EventDashboard);
+EventDashboard.porpTypes = {
+   createEvent: PropTypes.func.isRequired,
+   updateEvent: PropTypes.func.isRequired,
+   deleteEvent: PropTypes.func.isRequired,
+};
+
+export default connect(
+   mapState,
+   actions,
+)(EventDashboard);
