@@ -33,7 +33,7 @@ Going
             <List relaxed divided>
                {attendees
                   && attendees.map(attendee => (
-                     <Item style={{ position: 'relative' }}>
+                     <Item key={attendee.id} style={{ position: 'relative' }}>
                         <Label ribbon="right" color="orange" style={{ position: 'absolute' }}>
                            Host
                         </Label>
