@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import cuid from 'cuid';
 import { Segment, Form, Button } from 'semantic-ui-react';
+import { createEvent, updateEvent } from '../eventActions';
 
 const mapState = (state, ownProps) => {
    const { events } = state;
@@ -23,6 +26,11 @@ const mapState = (state, ownProps) => {
    };
 };
 
+const actions = {
+   createEvent,
+   updateEvent,
+};
+
 class EventForm extends Component {
    state = {
       event: Object.assign({}, this.props.event),
@@ -30,14 +38,23 @@ class EventForm extends Component {
 
    onFormSubmit = (evt) => {
       evt.preventDefault();
+
       const { event } = this.state;
-      const { updateEvent, createEvent } = this.props;
+      const { updateEvent, createEvent, history } = this.props;
 
       if (event.id) {
          updateEvent(event);
+         history.goBack();
       }
       else {
-         createEvent(event);
+         const newEvent = {
+            ...event,
+            id: cuid(),
+            hostPhotoURL: '/assets/user.png',
+         };
+
+         createEvent(newEvent);
+         history.push('/events');
       }
    };
 
@@ -51,7 +68,7 @@ class EventForm extends Component {
    };
 
    render() {
-      const { handleCancel } = this.props;
+      const { history } = this.props;
       const { event } = this.state;
 
       return (
@@ -125,7 +142,7 @@ class EventForm extends Component {
                <Button type="submit" positive>
                   Submit
                </Button>
-               <Button onClick={handleCancel} type="button">
+               <Button onClick={history.goBack} type="button">
                   Cancel
                </Button>
             </Form>
@@ -134,4 +151,16 @@ class EventForm extends Component {
    }
 }
 
-export default connect(mapState)(EventForm);
+EventForm.propTypes = {
+   createEvent: PropTypes.func.isRequired,
+   updateEvent: PropTypes.func.isRequired,
+   history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+      goBack: PropTypes.func.isRequired,
+   }).isRequired,
+};
+
+export default connect(
+   mapState,
+   actions,
+)(EventForm);
