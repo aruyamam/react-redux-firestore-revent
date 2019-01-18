@@ -8,6 +8,7 @@ import {
 } from 'semantic-ui-react';
 import { createEvent, updateEvent } from '../eventActions';
 import TextInput from '../../../app/common/form/TextInput';
+import TextArea from '../../../app/common/form/TextArea';
 
 const mapState = (state, ownProps) => {
    const { events } = state;
@@ -59,6 +60,8 @@ class EventForm extends Component {
    };
 
    render() {
+      const { history } = this.props;
+
       return (
          <Segment>
             <Grid>
@@ -81,7 +84,8 @@ class EventForm extends Component {
                         <Field
                            name="description"
                            type="text"
-                           component={TextInput}
+                           rows={3}
+                           component={TextArea}
                            placeholder="Tell us about your event"
                         />
                         <Header sub color="teal" content="Event Location Details" />
