@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
+import {
+   composeValidators, combineValidators, isRequired, hasLengthGreaterThan,
+} from 'revalidate';
 import cuid from 'cuid';
 import {
    Segment, Form, Button, Grid, Header,
@@ -40,6 +43,17 @@ const category = [
    { key: 'travel', text: 'Travel', value: 'travel' },
 ];
 
+const validate = combineValidators({
+   title: isRequired({ message: 'The event title is required' }),
+   cateogry: isRequired({ message: 'Please provide a ctegory' }),
+   description: composeValidators(
+      isRequired({ message: 'Please enter a description' }),
+      hasLengthGreaterThan(4)({ message: 'Description needs to be at least 5 characters' }),
+   )(),
+   city: isRequired('city'),
+   venue: isRequired('venue'),
+});
+
 class EventForm extends Component {
    onFormSubmit = (values) => {
       const {
@@ -64,7 +78,7 @@ class EventForm extends Component {
    };
 
    render() {
-      const { history, handleSubmit } = this.props;
+      const { history, handleSubmit, invalid, pristine, submitting } = this.props;
 
       return (
          <Grid>
@@ -111,7 +125,7 @@ class EventForm extends Component {
                         component={TextInput}
                         placeholder="Event Date"
                      />
-                     <Button type="submit" positive>
+                     <Button type="submit" positive disabled={invalid || submitting || pristine}>
                         Submit
                      </Button>
                      <Button onClick={history.goBack} type="button">
@@ -138,4 +152,4 @@ EventForm.propTypes = {
 export default connect(
    mapState,
    actions,
-)(reduxForm({ form: 'eventForm', enableReinitialize: true })(EventForm));
+)(reduxForm({ form: 'eventForm', enableReinitialize: true, validate })(EventForm));
