@@ -15,20 +15,14 @@ const mapState = (state, ownProps) => {
    const { events } = state;
    const eventId = ownProps.match.params.id;
 
-   let event = {
-      title: '',
-      date: '',
-      city: '',
-      venue: '',
-      hostedBy: '',
-   };
+   let event = {};
 
    if (eventId && events.length > 0) {
       [event] = events.filter(event => event.id === eventId);
    }
 
    return {
-      event,
+      initialValues: event,
    };
 };
 
@@ -47,21 +41,21 @@ const category = [
 ];
 
 class EventForm extends Component {
-   onFormSubmit = (evt) => {
-      evt.preventDefault();
+   onFormSubmit = (values) => {
+      const {
+         initialValues, updateEvent, createEvent, history,
+      } = this.props;
 
-      const { event } = this.state;
-      const { updateEvent, createEvent, history } = this.props;
-
-      if (event.id) {
-         updateEvent(event);
+      if (initialValues.id) {
+         updateEvent(values);
          history.goBack();
       }
       else {
          const newEvent = {
-            ...event,
+            ...values,
             id: cuid(),
             hostPhotoURL: '/assets/user.png',
+            hostedBy: 'Bob',
          };
 
          createEvent(newEvent);
@@ -70,65 +64,63 @@ class EventForm extends Component {
    };
 
    render() {
-      const { history } = this.props;
+      const { history, handleSubmit } = this.props;
 
       return (
-         <Segment>
-            <Grid>
-               <Grid.Column>
-                  <Segment>
-                     <Header sub color="teal" content="Event Details" />
-                     <Form onSubmit={this.onFormSubmit}>
-                        <Field
-                           name="title"
-                           type="text"
-                           component={TextInput}
-                           placeholder="Give your event a dname"
-                        />
-                        <Field
-                           name="category"
-                           type="text"
-                           component={SelectInput}
-                           options={category}
-                           placeholder="What is your event about"
-                        />
-                        <Field
-                           name="description"
-                           type="text"
-                           rows={3}
-                           component={TextArea}
-                           placeholder="Tell us about your event"
-                        />
-                        <Header sub color="teal" content="Event Location Details" />
-                        <Field
-                           name="city"
-                           type="text"
-                           component={TextInput}
-                           placeholder="Event City"
-                        />
-                        <Field
-                           name="venue"
-                           type="text"
-                           component={TextInput}
-                           placeholder="Event Venue"
-                        />
-                        <Field
-                           name="date"
-                           type="text"
-                           component={TextInput}
-                           placeholder="Event Date"
-                        />
-                     </Form>
-                  </Segment>
-               </Grid.Column>
-            </Grid>
-            <Button type="submit" positive>
-               Submit
-            </Button>
-            <Button onClick={history.goBack} type="button">
-               Cancel
-            </Button>
-         </Segment>
+         <Grid>
+            <Grid.Column width={10}>
+               <Segment>
+                  <Header sub color="teal" content="Event Details" />
+                  <Form onSubmit={handleSubmit(this.onFormSubmit)}>
+                     <Field
+                        name="title"
+                        type="text"
+                        component={TextInput}
+                        placeholder="Give your event a dname"
+                     />
+                     <Field
+                        name="category"
+                        type="text"
+                        component={SelectInput}
+                        options={category}
+                        placeholder="What is your event about"
+                     />
+                     <Field
+                        name="description"
+                        type="text"
+                        rows={3}
+                        component={TextArea}
+                        placeholder="Tell us about your event"
+                     />
+                     <Header sub color="teal" content="Event Location Details" />
+                     <Field
+                        name="city"
+                        type="text"
+                        component={TextInput}
+                        placeholder="Event City"
+                     />
+                     <Field
+                        name="venue"
+                        type="text"
+                        component={TextInput}
+                        placeholder="Event Venue"
+                     />
+                     <Field
+                        name="date"
+                        type="text"
+                        component={TextInput}
+                        placeholder="Event Date"
+                     />
+                     <Button type="submit" positive>
+                        Submit
+                     </Button>
+                     <Button onClick={history.goBack} type="button">
+                        Cancel
+                     </Button>
+                  </Form>
+               </Segment>
+            </Grid.Column>
+         </Grid>
       );
    }
 }
@@ -140,9 +132,10 @@ EventForm.propTypes = {
       push: PropTypes.func.isRequired,
       goBack: PropTypes.func.isRequired,
    }).isRequired,
+   handleSubmit: PropTypes.func.isRequired,
 };
 
 export default connect(
    mapState,
    actions,
-)(reduxForm({ form: 'eventForm' })(EventForm));
+)(reduxForm({ form: 'eventForm', enableReinitialize: true })(EventForm));
