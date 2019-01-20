@@ -16,7 +16,7 @@ export class TestComponent extends Component {
    state = {};
 
    render() {
-      const { incrementCounter, decrementCounter, data } = this.props;
+      const { incrementCounter, decrementCounter } = this.props;
 
       return (
          <div>

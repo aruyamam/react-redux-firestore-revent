@@ -6,6 +6,7 @@ import {
    composeValidators, combineValidators, isRequired, hasLengthGreaterThan,
 } from 'revalidate';
 import cuid from 'cuid';
+import moment from 'moment';
 import {
    Segment, Form, Button, Grid, Header,
 } from 'semantic-ui-react';
@@ -13,6 +14,7 @@ import { createEvent, updateEvent } from '../eventActions';
 import TextInput from '../../../app/common/form/TextInput';
 import TextArea from '../../../app/common/form/TextArea';
 import SelectInput from '../../../app/common/form/SelectInput';
+import DateInput from '../../../app/common/form/DateInput';
 
 const mapState = (state, ownProps) => {
    const { events } = state;
@@ -52,10 +54,14 @@ const validate = combineValidators({
    )(),
    city: isRequired('city'),
    venue: isRequired('venue'),
+   date: isRequired('date'),
 });
 
 class EventForm extends Component {
-   onFormSubmit = (values) => {
+   onFormSubmit = (inputValues) => {
+      const values = inputValues;
+      values.date = moment(values.date).format();
+
       const {
          initialValues, updateEvent, createEvent, history,
       } = this.props;
@@ -78,7 +84,9 @@ class EventForm extends Component {
    };
 
    render() {
-      const { history, handleSubmit, invalid, pristine, submitting } = this.props;
+      const {
+         history, handleSubmit, invalid, pristine, submitting,
+      } = this.props;
 
       return (
          <Grid>
@@ -122,8 +130,11 @@ class EventForm extends Component {
                      <Field
                         name="date"
                         type="text"
-                        component={TextInput}
-                        placeholder="Event Date"
+                        component={DateInput}
+                        dateFormat="YYYY-MM-DD HH:mm"
+                        timeFormat="HH:mm"
+                        showTimeSelect
+                        placeholder="Date and Time of event"
                      />
                      <Button type="submit" positive disabled={invalid || submitting || pristine}>
                         Submit
@@ -147,6 +158,21 @@ EventForm.propTypes = {
       goBack: PropTypes.func.isRequired,
    }).isRequired,
    handleSubmit: PropTypes.func.isRequired,
+   initialValues: PropTypes.shape({
+      attendees: PropTypes.arrayOf(PropTypes.object),
+      category: PropTypes.string,
+      city: PropTypes.string,
+      date: PropTypes.string,
+      description: PropTypes.string,
+      hostPhotoURL: PropTypes.string,
+      hostedBy: PropTypes.string,
+      it: PropTypes.string,
+      title: PropTypes.string,
+      veneue: PropTypes.string,
+   }).isRequired,
+   invalid: PropTypes.bool.isRequired,
+   pristine: PropTypes.bool.isRequired,
+   submitting: PropTypes.bool.isRequired,
 };
 
 export default connect(

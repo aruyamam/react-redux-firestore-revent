@@ -10,28 +10,25 @@ const itemContentStyle = {
    justifyContent: 'flex-end',
 };
 
-const EventDetailedSidebar = ({ attendees }) => {
-   const isHost = false;
-
-   return (
-      <div>
-         <Segment
-            textAlign="center"
-            attached="top"
-            secondary
-            inverted
-            color="teal"
-            style={{ border: 'none' }}
-         >
-            {attendees && attendees.length}
-            {' '}
-            {attendees && attendees.length === 1 ? 'Person' : 'People'}
-            {' '}
+const EventDetailedSidebar = ({ attendees }) => (
+   <div>
+      <Segment
+         textAlign="center"
+         attached="top"
+         secondary
+         inverted
+         color="teal"
+         style={{ border: 'none' }}
+      >
+         {attendees && attendees.length}
+         {' '}
+         {attendees && attendees.length === 1 ? 'Person' : 'People'}
+         {' '}
 Going
-         </Segment>
-         <Segment attached>
-            <List relaxed divided>
-               {attendees
+      </Segment>
+      <Segment attached>
+         <List relaxed divided>
+            {attendees
                   && attendees.map(attendee => (
                      <Item key={attendee.id} style={{ position: 'relative' }}>
                         <Label ribbon="right" color="orange" style={{ position: 'absolute' }}>
@@ -49,10 +46,9 @@ Going
                         </Item.Content>
                      </Item>
                   ))}
-            </List>
-         </Segment>
-      </div>
-   );
-};
+         </List>
+      </Segment>
+   </div>
+);
 
 export default EventDetailedSidebar;

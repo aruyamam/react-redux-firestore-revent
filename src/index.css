@@ -2,6 +2,21 @@ body {
   background-color: rgb(234, 234, 234);
 }
 
+/* timepicker style */
+.react-datepicker__input-container {
+  width: inherit;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__time-list-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* navbar styles */
 .ui.menu .item img.logo {
   margin-right: 1.5em;
