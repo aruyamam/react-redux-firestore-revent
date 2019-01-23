@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import GoogleMapReact from 'google-map-react';
+// import GoogleMapReact from 'google-map-react';
 import { Button, Icon } from 'semantic-ui-react';
 import Script from 'react-load-script';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
@@ -107,7 +107,7 @@ export class TestComponent extends Component {
                )}
             </form>
 
-            <div style={{ height: '300px', width: '100%' }}>
+            {/* <div style={{ height: '300px', width: '100%' }}>
                <GoogleMapReact
                   bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAP_API }}
                   defaultCenter={this.props.center}
@@ -115,7 +115,7 @@ export class TestComponent extends Component {
                >
                   <Marker lat={59.955413} lng={30.337844} text="Kreyser Avrora" />
                </GoogleMapReact>
-            </div>
+                           </div> */}
          </div>
       );
    }

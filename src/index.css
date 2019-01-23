@@ -17,6 +17,10 @@ body {
   align-items: center;
 }
 
+.react-datepicker__time-list .react-datepicker__time-list-item {
+  padding: 0 !important;
+}
+
 /* navbar styles */
 .ui.menu .item img.logo {
   margin-right: 1.5em;
