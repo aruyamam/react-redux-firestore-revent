@@ -6,16 +6,16 @@ import { NavLink, Link, withRouter } from 'react-router-dom';
 import SignedInMenu from '../Menus/SignedInMenu';
 import SignedOutMenu from '../Menus/SignedOutMenu';
 import { openModal } from '../../modals/modalActions';
+import { logout } from '../../auth/authActions';
 
 const actions = {
    openModal,
+   logout,
 };
 
-class NavBar extends Component {
-   state = {
-      authenticated: false,
-   };
+const mapState = ({ auth }) => ({ auth });
 
+class NavBar extends Component {
    handleSignIn = () => {
       this.props.openModal('LoginModal');
    };
@@ -25,16 +25,16 @@ class NavBar extends Component {
    };
 
    handleSignOut = () => {
-      const { history } = this.props;
+      const { history, logout } = this.props;
 
-      this.setState({
-         authenticated: false,
-      });
+      logout();
       history.push('/');
    };
 
    render() {
-      const { authenticated } = this.state;
+      const {
+         auth: { authenticated, currentUser },
+      } = this.props;
 
       return (
          <Menu inverted fixed="top">
@@ -59,7 +59,7 @@ class NavBar extends Component {
                   </Menu.Item>
                )}
                {authenticated ? (
-                  <SignedInMenu signOut={this.handleSignOut} />
+                  <SignedInMenu currentUser={currentUser} signOut={this.handleSignOut} />
                ) : (
                   <SignedOutMenu signIn={this.handleSignIn} register={this.handleRegister} />
                )}
@@ -73,11 +73,14 @@ NavBar.propTypes = {
    history: PropTypes.shape({
       push: PropTypes.func.isRequired,
    }).isRequired,
+   auth: PropTypes.shape({
+      authenticated: PropTypes.bool,
+   }).isRequired,
 };
 
 export default withRouter(
    connect(
-      null,
+      mapState,
       actions,
    )(NavBar),
 );
