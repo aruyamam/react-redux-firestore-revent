@@ -10,6 +10,10 @@ class EventDetailedInfo extends Component {
       showMap: false,
    };
 
+   componentWillUnmount() {
+      this.setState({ showMap: false });
+   }
+
    showMapToggle = () => {
       this.setState(prevState => ({
          showMap: !prevState.showMap,
@@ -39,10 +43,7 @@ class EventDetailedInfo extends Component {
                   </Grid.Column>
                   <Grid.Column width={15}>
                      <span>
-                        {`${format(event.date, 'dddd Do MMMM')} at ${format(
-                           event.date,
-                           'h:mm A',
-                        )}`}
+                        {`${format(event.date, 'dddd Do MMMM')} at ${format(event.date, 'h:mm A')}`}
                      </span>
                   </Grid.Column>
                </Grid>
