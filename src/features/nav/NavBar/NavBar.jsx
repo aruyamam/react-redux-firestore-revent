@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withFirebase } from 'react-redux-firebase';
 import { Button, Container, Menu } from 'semantic-ui-react';
 import { NavLink, Link, withRouter } from 'react-router-dom';
 import SignedInMenu from '../Menus/SignedInMenu';
@@ -13,7 +14,7 @@ const actions = {
    logout,
 };
 
-const mapState = ({ auth }) => ({ auth });
+const mapState = ({ firebase: { auth } }) => ({ auth });
 
 class NavBar extends Component {
    handleSignIn = () => {
@@ -25,16 +26,15 @@ class NavBar extends Component {
    };
 
    handleSignOut = () => {
-      const { history, logout } = this.props;
+      const { history, firebase } = this.props;
 
-      logout();
+      firebase.logout();
       history.push('/');
    };
 
    render() {
-      const {
-         auth: { authenticated, currentUser },
-      } = this.props;
+      const { auth } = this.props;
+      const authenticated = auth.isLoaded && !auth.isEmpty;
 
       return (
          <Menu inverted fixed="top">
@@ -59,7 +59,7 @@ class NavBar extends Component {
                   </Menu.Item>
                )}
                {authenticated ? (
-                  <SignedInMenu currentUser={currentUser} signOut={this.handleSignOut} />
+                  <SignedInMenu auth={auth} signOut={this.handleSignOut} />
                ) : (
                   <SignedOutMenu signIn={this.handleSignIn} register={this.handleRegister} />
                )}
@@ -73,14 +73,20 @@ NavBar.propTypes = {
    history: PropTypes.shape({
       push: PropTypes.func.isRequired,
    }).isRequired,
+   firebase: PropTypes.shape({
+      logout: PropTypes.func.isRequired,
+   }).isRequired,
    auth: PropTypes.shape({
-      authenticated: PropTypes.bool,
+      isLoaded: PropTypes.bool.isRequired,
+      isEmpty: PropTypes.bool.isRequired,
    }).isRequired,
 };
 
 export default withRouter(
-   connect(
-      mapState,
-      actions,
-   )(NavBar),
+   withFirebase(
+      connect(
+         mapState,
+         actions,
+      )(NavBar),
+   ),
 );
