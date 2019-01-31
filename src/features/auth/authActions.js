@@ -41,5 +41,8 @@ export const registerUser = user => async (dispatch, getState, { getFirebase, ge
    }
    catch (error) {
       console.log(error);
+      throw new SubmissionError({
+         _error: error.message,
+      });
    }
 };
