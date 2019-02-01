@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-   Button, Form, Label, Segment,
+   Button, Divider, Form, Label, Segment,
 } from 'semantic-ui-react';
 import { Field, reduxForm } from 'redux-form';
 import { combineValidators, isRequired } from 'revalidate';
 import TextInput from '../../../app/common/form/TextInput';
+import SocialLogin from '../SocialLogin/SocialLogin';
 import { registerUser } from '../authActions';
 
 const actions = {
@@ -36,6 +37,8 @@ const RegisterForm = ({
             <Button disabled={invalid || submitting} fluid size="large" color="teal">
                Register
             </Button>
+            <Divider horizontal>Or</Divider>
+            <SocialLogin />
          </Segment>
       </Form>
    </div>
