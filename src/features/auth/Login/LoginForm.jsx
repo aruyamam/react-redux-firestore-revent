@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
    Button, Divider, Form, Label, Segment,
@@ -6,13 +7,16 @@ import {
 import { Field, reduxForm } from 'redux-form';
 import TextInput from '../../../app/common/form/TextInput';
 import SocialLogin from '../SocialLogin/SocialLogin';
-import { login } from '../authActions';
+import { login, socialLogin } from '../authActions';
 
 const actions = {
    login,
+   socialLogin,
 };
 
-const LoginForm = ({ login, handleSubmit, error }) => (
+const LoginForm = ({
+   login, handleSubmit, error, socialLogin,
+}) => (
    <Form error size="large" onSubmit={handleSubmit(login)}>
       <Segment>
          <Field name="email" type="text" component={TextInput} placeholder="Email Address" />
@@ -26,10 +30,16 @@ const LoginForm = ({ login, handleSubmit, error }) => (
             Login
          </Button>
          <Divider horizontal>Or</Divider>
-         <SocialLogin />
+         <SocialLogin socialLogin={socialLogin} />
       </Segment>
    </Form>
 );
+
+LoginForm.propTypes = {
+   handleSubmit: PropTypes.func.isRequired,
+   login: PropTypes.func.isRequired,
+   socialLogin: PropTypes.func.isRequired,
+};
 
 export default connect(
    null,
