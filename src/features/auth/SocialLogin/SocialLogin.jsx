@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Icon } from 'semantic-ui-react';
 
 const SocialLogin = ({ socialLogin }) => (
@@ -14,11 +15,15 @@ const SocialLogin = ({ socialLogin }) => (
          {' Login with Facebook'}
       </Button>
 
-      <Button type="button" fluid color="google plus">
+      <Button onClick={() => socialLogin('google')} type="button" fluid color="google plus">
          <Icon name="google plus" />
          {' Login with Google'}
       </Button>
    </div>
 );
+
+SocialLogin.propTypes = {
+   socialLogin: PropTypes.func.isRequired,
+};
 
 export default SocialLogin;
