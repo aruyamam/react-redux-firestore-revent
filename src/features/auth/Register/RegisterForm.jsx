@@ -8,10 +8,11 @@ import { Field, reduxForm } from 'redux-form';
 import { combineValidators, isRequired } from 'revalidate';
 import TextInput from '../../../app/common/form/TextInput';
 import SocialLogin from '../SocialLogin/SocialLogin';
-import { registerUser } from '../authActions';
+import { registerUser, socialLogin } from '../authActions';
 
 const actions = {
    registerUser,
+   socialLogin,
 };
 
 const validate = combineValidators({
@@ -21,7 +22,7 @@ const validate = combineValidators({
 });
 
 const RegisterForm = ({
-   handleSubmit, registerUser, error, invalid, submitting,
+   handleSubmit, registerUser, error, invalid, submitting, socialLogin,
 }) => (
    <div>
       <Form onSubmit={handleSubmit(registerUser)} size="large">
@@ -38,7 +39,7 @@ const RegisterForm = ({
                Register
             </Button>
             <Divider horizontal>Or</Divider>
-            <SocialLogin />
+            <SocialLogin socialLogin={socialLogin} />
          </Segment>
       </Form>
    </div>
@@ -49,6 +50,7 @@ RegisterForm.propTypes = {
    registerUser: PropTypes.func.isRequired,
    invalid: PropTypes.bool.isRequired,
    submitting: PropTypes.bool.isRequired,
+   socialLogin: PropTypes.func.isRequired,
 };
 
 export default connect(
