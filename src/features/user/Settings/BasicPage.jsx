@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
    Button, Divider, Form, Header, Segment,
 } from 'semantic-ui-react';
@@ -13,12 +14,14 @@ class BasicPage extends Component {
    state = {};
 
    render() {
-      const { pristine, submitting } = this.props;
+      const {
+         pristine, submitting, handleSubmit, updateProfile,
+      } = this.props;
 
       return (
          <Segment>
             <Header content="Basics" dividing size="large" />
-            <Form>
+            <Form onSubmit={handleSubmit(updateProfile)}>
                <Field
                   component={TextInput}
                   name="displayName"
@@ -45,7 +48,7 @@ class BasicPage extends Component {
                </Form.Group>
                <Field
                   component={DateInput}
-                  dateFormat="YYY-MM-DD"
+                  dateFormat="YYYY-MM-DD"
                   dropdownMode="select"
                   maxDate={moment().subtract(18, 'years')}
                   name="dateOfBirth"
@@ -74,5 +77,12 @@ class BasicPage extends Component {
       );
    }
 }
+
+BasicPage.propTypes = {
+   handleSubmit: PropTypes.func.isRequired,
+   pristine: PropTypes.bool.isRequired,
+   submitting: PropTypes.bool.isRequired,
+   updateProfile: PropTypes.func.isRequired,
+};
 
 export default reduxForm({ form: 'userProfile', enableReinitialize: true })(BasicPage);
