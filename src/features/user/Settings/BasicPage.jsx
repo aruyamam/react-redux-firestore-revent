@@ -30,7 +30,7 @@ class BasicPage extends Component {
                   width={8}
                />
                <Form.Group inline>
-                  <strong style={{ marginRight: '10px' }}>Gender: </strong>
+                  <p style={{ margin: '0 10px 0 0' }}>Gender: </p>
                   <Field
                      component={RadioInput}
                      label="Male"
@@ -85,4 +85,8 @@ BasicPage.propTypes = {
    updateProfile: PropTypes.func.isRequired,
 };
 
-export default reduxForm({ form: 'userProfile', enableReinitialize: true })(BasicPage);
+export default reduxForm({
+   destroyOnUnmount: false,
+   enableReinitialize: true,
+   form: 'userProfile',
+})(BasicPage);
