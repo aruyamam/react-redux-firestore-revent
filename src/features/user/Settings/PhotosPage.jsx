@@ -3,6 +3,8 @@ import {
    Button, Card, Divider, Grid, Header, Icon, Image, Segment,
 } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
+import Cropper from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
 
 const dropZoneStyle = {
    border: '1px dashed black',
@@ -24,6 +26,22 @@ class PhotosPage extends Component {
    state = {
       files: [],
       fileName: '',
+      cropResult: null,
+      image: {},
+   };
+
+   cropImage = () => {
+      if (typeof this.refs.cropper.getCroppedCanvas() === 'undefined') {
+         return;
+      }
+
+      this.refs.cropper.getCroppedCanvas().toBlob((blob) => {
+         const imageUrl = URL.createObjectURL(blob);
+         this.setState({
+            cropResult: imageUrl,
+            image: blob,
+         });
+      });
    };
 
    onDrop = (files) => {
@@ -34,7 +52,7 @@ class PhotosPage extends Component {
    };
 
    render() {
-      const { files } = this.state;
+      const { cropResult, files } = this.state;
 
       return (
          <Segment>
@@ -61,11 +79,26 @@ class PhotosPage extends Component {
                <Grid.Column width={1} />
                <Grid.Column width={4}>
                   <Header color="teal" content="Step 2 - Resize image" />
+                  {files[0] && (
+                     <Cropper
+                        aspectRatio={1}
+                        crop={this.cropImage}
+                        cropBoxMovable
+                        cropBoxResizable
+                        dragMode="move"
+                        guides={false}
+                        ref="cropper"
+                        scalable
+                        src={files[0].preview}
+                        style={{ height: 200, width: '100%' }}
+                        viewMode={0}
+                     />
+                  )}
                </Grid.Column>
                <Grid.Column width={1} />
                <Grid.Column width={4}>
                   <Header color="teal" content="Step 3 - Preview and Upload" />
-                  <Image style={ImagePreviewStyle} src={files[0] && files[0].preview} />
+                  {files[0] && <Image style={ImagePreviewStyle} src={cropResult} />}
                </Grid.Column>
             </Grid>
             <Divider />
