@@ -43,6 +43,7 @@ const actions = {
 const mapState = state => ({
    auth: state.firebase.auth,
    profile: state.firebase.profile,
+   photos: state.firestore.ordered.photos,
 });
 
 class PhotosPage extends Component {
@@ -97,6 +98,11 @@ class PhotosPage extends Component {
 
    render() {
       const { cropResult, files } = this.state;
+      const { photos, profile } = this.props;
+      let filteredPhoto;
+      if (photos) {
+         filteredPhoto = photos.filter(photo => photo.url !== profile.photoURL);
+      }
 
       return (
          <Segment>
@@ -166,18 +172,21 @@ class PhotosPage extends Component {
             <Header color="teal" content="All Photos" sub />
             <Card.Group itemsPerRow={5}>
                <Card>
-                  <Image src="https://randomuser.me/api/portraits/men/20.jpg" />
+                  <Image src={profile.photoURL} />
                   <Button positive>Main Photo</Button>
                </Card>
-               <Card>
-                  <Image src="https://randomuser.me/api/portraits/men/20.jpg" />
-                  <div className="ui two buttons">
-                     <Button basic color="green">
-                        Main
-                     </Button>
-                     <Button basic color="red" icon="trash" />
-                  </div>
-               </Card>
+               {photos
+                  && filteredPhoto.map(photo => (
+                     <Card key={photo.id}>
+                        <Image src={photo.url} />
+                        <div className="ui two buttons">
+                           <Button basic color="green">
+                              Main
+                           </Button>
+                           <Button basic color="red" icon="trash" />
+                        </div>
+                     </Card>
+                  ))}
             </Card.Group>
          </Segment>
       );
