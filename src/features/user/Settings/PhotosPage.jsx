@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { compose } from 'redux';
 import {
    Button, Card, Divider, Grid, Header, Icon, Image, Segment,
 } from 'semantic-ui-react';
@@ -25,9 +27,23 @@ const ImagePreviewStyle = {
    minWidth: '200px',
 };
 
+const query = ({ auth }) => [
+   {
+      collection: 'users',
+      doc: auth.uid,
+      subcollections: [{ collection: 'photos' }],
+      storeAs: 'photos',
+   },
+];
+
 const actions = {
    uploadProfileImage,
 };
+
+const mapState = state => ({
+   auth: state.firebase.auth,
+   profile: state.firebase.profile,
+});
 
 class PhotosPage extends Component {
    state = {
@@ -168,7 +184,10 @@ class PhotosPage extends Component {
    }
 }
 
-export default connect(
-   null,
-   actions,
+export default compose(
+   connect(
+      mapState,
+      actions,
+   ),
+   firestoreConnect(auth => query(auth)),
 )(PhotosPage);

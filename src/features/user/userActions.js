@@ -20,10 +20,10 @@ export const updateProfile = user => async (dispatch, getState, { getFirebase })
 export const uploadProfileImage = (file, fileName) => async (
    dispatch,
    getState,
-   { getFirebase, getFireStore },
+   { getFirebase, getFirestore },
 ) => {
    const firebase = getFirebase();
-   const firestore = getFireStore();
+   const firestore = getFirestore();
    const user = firebase.auth().currentUser;
    const path = `${user.uid}/user_images`;
    const options = {
@@ -34,7 +34,7 @@ export const uploadProfileImage = (file, fileName) => async (
       // upload the file to firebase storage
       const uploadedFile = await firebase.uploadFile(path, file, null, options);
       // get url of image
-      const { downloadURL } = await uploadedFile.uploadTaskSnapshot;
+      const downloadURL = await uploadedFile.uploadTaskSnapshot.ref.getDownloadURL();
       // get userdoc
       const userDoc = await firestore.get(`users/${user.uid}`);
 
