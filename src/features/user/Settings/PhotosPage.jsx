@@ -121,7 +121,6 @@ class PhotosPage extends Component {
    render() {
       const { cropResult, files } = this.state;
       const { photos, profile, loading } = this.props;
-      console.log(photos, profile);
 
       let filteredPhoto;
       if (photos) {
