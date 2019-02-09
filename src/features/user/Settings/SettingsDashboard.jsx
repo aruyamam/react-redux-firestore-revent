@@ -8,7 +8,7 @@ import AccountPage from './AccountPage';
 import BasicPage from './BasicPage';
 import PhotosPage from './PhotosPage';
 import { updatePassword } from '../../auth/authActions';
-import updateProfile from '../userActions';
+import { updateProfile } from '../userActions';
 
 const actions = {
    updatePassword,
