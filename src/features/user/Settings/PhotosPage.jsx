@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
@@ -9,7 +10,7 @@ import Dropzone from 'react-dropzone';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { toastr } from 'react-redux-toastr';
-import { uploadProfileImage } from '../userActions';
+import { uploadProfileImage, deletePhoto } from '../userActions';
 
 const dropZoneStyle = {
    border: '1px dashed black',
@@ -38,6 +39,7 @@ const query = ({ auth }) => [
 
 const actions = {
    uploadProfileImage,
+   deletePhoto,
 };
 
 const mapState = state => ({
@@ -62,6 +64,15 @@ class PhotosPage extends Component {
          await uploadProfileImage(image, fileName);
          this.cancelCrop();
          toastr.success('Success!', 'Photo has been uploaded');
+      }
+      catch (error) {
+         toastr.error('Oops', error.message);
+      }
+   };
+
+   handlePhotoDelete = photo => () => {
+      try {
+         this.props.deletePhoto(photo);
       }
       catch (error) {
          toastr.error('Oops', error.message);
@@ -99,6 +110,7 @@ class PhotosPage extends Component {
    render() {
       const { cropResult, files } = this.state;
       const { photos, profile } = this.props;
+
       let filteredPhoto;
       if (photos) {
          filteredPhoto = photos.filter(photo => photo.url !== profile.photoURL);
@@ -183,7 +195,12 @@ class PhotosPage extends Component {
                            <Button basic color="green">
                               Main
                            </Button>
-                           <Button basic color="red" icon="trash" />
+                           <Button
+                              onClick={this.handlePhotoDelete(photo)}
+                              basic
+                              color="red"
+                              icon="trash"
+                           />
                         </div>
                      </Card>
                   ))}
@@ -192,6 +209,10 @@ class PhotosPage extends Component {
       );
    }
 }
+
+PhotosPage.propTypes = {
+   uploadProfileImage: PropTypes.func.isRequired,
+};
 
 export default compose(
    connect(
