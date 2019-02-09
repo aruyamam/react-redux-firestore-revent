@@ -47,6 +47,7 @@ const mapState = state => ({
    auth: state.firebase.auth,
    profile: state.firebase.profile,
    photos: state.firestore.ordered.photos,
+   loading: state.async.loading,
 });
 
 class PhotosPage extends Component {
@@ -119,7 +120,8 @@ class PhotosPage extends Component {
 
    render() {
       const { cropResult, files } = this.state;
-      const { photos, profile } = this.props;
+      const { photos, profile, loading } = this.props;
+      console.log(photos, profile);
 
       let filteredPhoto;
       if (photos) {
@@ -177,11 +179,13 @@ class PhotosPage extends Component {
                            <Button
                               onClick={this.uploadImage}
                               icon="check"
+                              loading={loading}
                               positive
                               style={{ width: '100px' }}
                            />
                            <Button
                               onClick={this.cancelCrop}
+                              disabled={loading}
                               icon="close"
                               style={{ width: '100px' }}
                            />
@@ -194,7 +198,7 @@ class PhotosPage extends Component {
             <Header color="teal" content="All Photos" sub />
             <Card.Group itemsPerRow={5}>
                <Card>
-                  <Image src={profile.photoURL} />
+                  <Image src={profile.photoURL || '/assets/user.png'} />
                   <Button positive>Main Photo</Button>
                </Card>
                {photos
@@ -221,9 +225,19 @@ class PhotosPage extends Component {
 }
 
 PhotosPage.propTypes = {
+   photos: PropTypes.arrayOf(
+      PropTypes.shape({
+         id: PropTypes.string.isRequired,
+         url: PropTypes.string.isRequired,
+      }),
+   ),
+   profile: PropTypes.shape({
+      photoURL: PropTypes.string.isRequired,
+   }),
    uploadProfileImage: PropTypes.func.isRequired,
    deletePhoto: PropTypes.func.isRequired,
    setMainPhoto: PropTypes.func.isRequired,
+   loading: PropTypes.bool.isRequired,
 };
 
 export default compose(
