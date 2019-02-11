@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import differenceInYears from 'date-fns/difference_in_years';
 import {
    Grid, Header, Item, Segment,
@@ -31,6 +32,15 @@ const UserDetailedHeader = ({ profile }) => {
          </Segment>
       </Grid.Column>
    );
+};
+
+UserDetailedHeader.propTypes = {
+   profile: PropTypes.shape({
+      city: PropTypes.string,
+      dateOfBirth: PropTypes.object,
+      displayName: PropTypes.string.isRequired,
+      occupation: PropTypes.string,
+   }).isRequired,
 };
 
 export default UserDetailedHeader;
