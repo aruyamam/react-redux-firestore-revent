@@ -3,7 +3,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import {
-   Button,
    Card,
    Grid,
    Header,
@@ -13,6 +12,7 @@ import {
 } from 'semantic-ui-react';
 import UserDetailedHeader from './UserDetailedHeader';
 import UserDetailedDescription from './UserDetailedDescription';
+import UserDetailedSidebar from './UserDetailedSidebar';
 
 const mapState = state => ({
    auth: state.firebase.auth,
@@ -29,23 +29,11 @@ const query = ({ auth }) => [
    },
 ];
 
-const UserDetailedPage = ({ profile, photos, history }) => !profile.isEmpty && (
+const UserDetailedPage = ({ profile, photos }) => !profile.isEmpty && (
    <Grid>
       <UserDetailedHeader profile={profile} />
       <UserDetailedDescription profile={profile} />
-      <Grid.Column width={4}>
-         <Segment>
-            <Button
-               onClick={() => {
-                  history.push('/settings/basic');
-               }}
-               basic
-               color="teal"
-               content="Edit Profile"
-               fluid
-            />
-         </Segment>
-      </Grid.Column>
+      <UserDetailedSidebar />
       {photos && photos.length > 0 && (
          <Grid.Column width={12}>
             <Segment attached>
