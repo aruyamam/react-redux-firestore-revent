@@ -13,6 +13,7 @@ import {
 import UserDetailedHeader from './UserDetailedHeader';
 import UserDetailedDescription from './UserDetailedDescription';
 import UserDetailedSidebar from './UserDetailedSidebar';
+import UserDetailedPhotos from './UserDetailedPhotos';
 
 const mapState = state => ({
    auth: state.firebase.auth,
@@ -35,16 +36,7 @@ const UserDetailedPage = ({ profile, photos }) => !profile.isEmpty && (
       <UserDetailedDescription profile={profile} />
       <UserDetailedSidebar />
       {photos && photos.length > 0 && (
-         <Grid.Column width={12}>
-            <Segment attached>
-               <Header content="Photos" icon="image outline" />
-               <Image.Group size="small">
-                  {photos.map(photo => (
-                     <Image key={photo.id} src={photo.url} />
-                  ))}
-               </Image.Group>
-            </Segment>
-         </Grid.Column>
+         <UserDetailedPhotos photos={photos} />
       )}
       <Grid.Column width={12}>
          <Segment attached>
