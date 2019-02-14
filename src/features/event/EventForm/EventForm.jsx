@@ -6,7 +6,6 @@ import { reduxForm, Field } from 'redux-form';
 import {
    composeValidators, combineValidators, isRequired, hasLengthGreaterThan,
 } from 'revalidate';
-import cuid from 'cuid';
 import moment from 'moment';
 import {
    Segment, Form, Button, Grid, Header,
@@ -77,8 +76,8 @@ class EventForm extends Component {
             this.setState({ cityLatLng: latlng });
          })
          .then(() => {
-            this.props.change('city', selectedCity)
-         })
+            this.props.change('city', selectedCity);
+         });
    };
 
    handleVenueSelect = (selectedVenue) => {
@@ -88,8 +87,8 @@ class EventForm extends Component {
             this.setState({ venueLatLng: latlng });
          })
          .then(() => {
-            this.props.change('venue', selectedVenue)
-         })
+            this.props.change('venue', selectedVenue);
+         });
    };
 
    onFormSubmit = (inputValues) => {
@@ -105,14 +104,7 @@ class EventForm extends Component {
          history.goBack();
       }
       else {
-         const newEvent = {
-            ...values,
-            id: cuid(),
-            hostPhotoURL: '/assets/user.png',
-            hostedBy: 'Bob',
-         };
-
-         createEvent(newEvent);
+         createEvent(values);
          history.push('/events');
       }
    };

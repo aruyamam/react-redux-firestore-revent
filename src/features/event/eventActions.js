@@ -9,9 +9,10 @@ export const fetchEvents = events => ({
    payload: events,
 });
 
-export const createEvent = event => async (dispatch, getState, { getFirestore }) => {
+export const createEvent = event => async (dispatch, getState, { getFirestore, getFirebase }) => {
    const firestore = getFirestore();
-   const user = firestore.auth().currentUser;
+   const firebase = getFirebase();
+   const user = firebase.auth().currentUser;
    const { photoURL } = getState().firebase.profile;
    const newEvent = createNewEvent(user, photoURL, event);
 
