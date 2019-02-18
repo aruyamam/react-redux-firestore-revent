@@ -7,13 +7,12 @@ import { reduxForm, Field } from 'redux-form';
 import {
    composeValidators, combineValidators, isRequired, hasLengthGreaterThan,
 } from 'revalidate';
-import moment from 'moment';
 import {
    Segment, Form, Button, Grid, Header,
 } from 'semantic-ui-react';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import Script from 'react-load-script';
-import { createEvent, updateEvent } from '../eventActions';
+import { cancelToggle, createEvent, updateEvent } from '../eventActions';
 import TextInput from '../../../app/common/form/TextInput';
 import TextArea from '../../../app/common/form/TextArea';
 import SelectInput from '../../../app/common/form/SelectInput';
@@ -33,10 +32,12 @@ const mapState = ({
 
    return {
       initialValues: event,
+      event,
    };
 };
 
 const actions = {
+   cancelToggle,
    createEvent,
    updateEvent,
 };
@@ -71,12 +72,12 @@ class EventForm extends Component {
 
    async componentDidMount() {
       const { firestore, match } = this.props;
-      const event = await firestore.get(`events/${match.params.id}`);
-      if (event.exists) {
-         this.setState({
-            venueLatLng: event.data().venueLatLng
-         });
-      }
+      await firestore.setListener(`events/${match.params.id}`);
+      // if (event.exists) {
+      //    this.setState({
+      //       venueLatLng: event.data().venueLatLng
+      //    });
+      // }
    }
 
    handleScriptLoaded = () => this.setState({ scriptLoaded: true });
@@ -106,16 +107,21 @@ class EventForm extends Component {
    onFormSubmit = (inputValues) => {
       const values = inputValues;
       const {
-         initialValues, updateEvent, createEvent, history,
+         event, initialValues, updateEvent, createEvent, history,
       } = this.props;
       
       values.venueLatLng = this.state.venueLatLng;
 
       if (initialValues.id) {
+         if (Object.keys(values.venueLatLng).length === 0) {
+            values.venueLatLng = event.venueLatLng;
+         }
+
          updateEvent(values);
          history.goBack();
       }
       else {
+         console.log(values);
          createEvent(values);
          history.push('/events');
       }
@@ -123,7 +129,7 @@ class EventForm extends Component {
 
    render() {
       const {
-         history, handleSubmit, invalid, pristine, submitting,
+         cancelToggle, event, history, handleSubmit, invalid, pristine, submitting,
       } = this.props;
       const { cityLatLng, scriptLoaded } = this.state;
 
@@ -197,6 +203,13 @@ class EventForm extends Component {
                      <Button onClick={history.goBack} type="button">
                         Cancel
                      </Button>
+                     <Button
+                        onClick={() => cancelToggle(!event.cancelled, event.id)}
+                        color={event.cancelled ? 'green' : 'red'}
+                        content={event.cancelled ? 'Reactivate Event' : 'Cancel event'}
+                        floated="right"
+                        type="button"
+                     />
                   </Form>
                </Segment>
             </Grid.Column>
@@ -206,18 +219,26 @@ class EventForm extends Component {
 }
 
 EventForm.propTypes = {
+   cancelToggle: PropTypes.func.isRequired,
    createEvent: PropTypes.func.isRequired,
    updateEvent: PropTypes.func.isRequired,
    history: PropTypes.shape({
       push: PropTypes.func.isRequired,
       goBack: PropTypes.func.isRequired,
    }).isRequired,
+   event: PropTypes.shape({
+      cancelled: PropTypes.bool,
+      venueLatLng: PropTypes.shape({
+         lat: PropTypes.number,
+         lng: PropTypes.number,
+      }),
+   }).isRequired,
    handleSubmit: PropTypes.func.isRequired,
    initialValues: PropTypes.shape({
-      attendees: PropTypes.arrayOf(PropTypes.object),
+      attendees: PropTypes.object,
       category: PropTypes.string,
       city: PropTypes.string,
-      date: PropTypes.string,
+      date: PropTypes.object,
       description: PropTypes.string,
       hostPhotoURL: PropTypes.string,
       hostedBy: PropTypes.string,

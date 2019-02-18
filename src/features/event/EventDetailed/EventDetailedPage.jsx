@@ -10,15 +10,18 @@ import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
 import { objectToArray } from '../../../app/common/util/helpers';
 
-const mapState = ({
-   firestore: {
-      ordered: { events },
+const mapState = (
+   {
+      firestore: {
+         ordered: { events },
+      },
    },
-}) => {
+   { match: { params } },
+) => {
    let event = {};
 
    if (events && events[0]) {
-      [event] = events;
+      [event] = events.filter(event => event.id === params.id);
    }
 
    return { event };

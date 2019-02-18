@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import format from 'date-fns/format';
 import {
-   Segment, Item, Icon, List, Button,
+   Segment, Item, Icon, Label, List, Button,
 } from 'semantic-ui-react';
 import EventListAttendee from './EventListAttendee';
 
@@ -23,8 +24,16 @@ class EventListItem extends Component {
                         <Item.Description>
                            Hosted by
                            {' '}
-                           <a>{event.hostedBy}</a>
+                           <Link to={`/profile/${event.hostUid}`}>{event.hostedBy}</Link>
                         </Item.Description>
+                        {event.cancelled && (
+                           <Label
+                              color="red"
+                              content="This event has been cancelled"
+                              style={{ top: '-40px' }}
+                              ribbon="right"
+                           />
+                        )}
                      </Item.Content>
                   </Item>
                </Item.Group>
@@ -44,7 +53,7 @@ class EventListItem extends Component {
                <List horizontal>
                   {event.attendees
                      && Object.values(event.attendees).map((attendee, index) => (
-                        <EventListAttendee key={index} attendee={attendee} />
+                        <EventListAttendee key={attendee.name + index} attendee={attendee} />
                      ))}
                </List>
             </Segment>
@@ -69,5 +78,19 @@ class EventListItem extends Component {
       );
    }
 }
+
+EventListItem.propTypes = {
+   deleteEvent: PropTypes.func.isRequired,
+   event: PropTypes.shape({
+      attendees: PropTypes.object.isRequired,
+      date: PropTypes.object.isRequired,
+      description: PropTypes.string.isRequired,
+      hostedBy: PropTypes.string.isRequired,
+      hostUid: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      venue: PropTypes.string.isRequired,
+   }).isRequired,
+};
 
 export default EventListItem;
