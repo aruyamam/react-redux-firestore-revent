@@ -12,6 +12,7 @@ import { objectToArray } from '../../../app/common/util/helpers';
 
 const mapState = (
    {
+      firebase: { auth },
       firestore: {
          ordered: { events },
       },
@@ -24,7 +25,7 @@ const mapState = (
       [event] = events.filter(event => event.id === params.id);
    }
 
-   return { event };
+   return { event, auth };
 };
 
 class EventDetailedPage extends Component {
@@ -38,13 +39,15 @@ class EventDetailedPage extends Component {
    }
 
    render() {
-      const { event } = this.props;
+      const { auth, event } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
+      const isHost = event.hostUid === auth.uid;
+      const isGoing = attendees && attendees.some(a => a.id === auth.uid);
 
       return (
          <Grid>
             <Grid.Column width={10}>
-               <EventDetailedHeader event={event} />
+               <EventDetailedHeader event={event} isHost={isHost} isGoing={isGoing} />
                <EventDetailedInfo event={event} />
                <EventDetailedChat />
             </Grid.Column>
@@ -57,6 +60,9 @@ class EventDetailedPage extends Component {
 }
 
 EventDetailedPage.propTypes = {
+   auth: PropTypes.shape({
+      uid: PropTypes.string,
+   }).isRequired,
    event: PropTypes.shape({
       attendees: PropTypes.object,
    }).isRequired,

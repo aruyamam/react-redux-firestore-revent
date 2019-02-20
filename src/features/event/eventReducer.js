@@ -5,11 +5,11 @@ import {
 
 const initialState = [];
 
-export const createEvent = (state, payload) => [...state, payload.event];
+export const createEvent = (state, payload) => [...state, Object.assign({}, payload.event)];
 
 export const updateEvent = (state, payload) => [
    ...state.filter(event => event.id !== payload.event.id),
-   payload.event,
+   Object.assign({}, payload.event),
 ];
 
 export const deleteEvent = (state, payload) => [

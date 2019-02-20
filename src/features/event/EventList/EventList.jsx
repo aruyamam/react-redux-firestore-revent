@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import EventListItem from './EventListItem';
 
 class EventList extends Component {
@@ -17,5 +18,14 @@ class EventList extends Component {
       );
    }
 }
+
+EventList.propTypes = {
+   deleteEvent: PropTypes.func.isRequired,
+   events: PropTypes.arrayOf(
+      PropTypes.shape({
+         id: PropTypes.string.isRequired,
+      }),
+   ).isRequired,
+};
 
 export default EventList;

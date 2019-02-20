@@ -8,11 +8,14 @@ import { deleteEvent } from '../eventActions';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import EventActivity from '../EventActivity/EventActivity';
 
-const mapState = state => ({
-   events: state.firestore.ordered.events,
-   loading: state.async.loading,
-});
+const mapState = ({ firestore: { ordered }, async: { loading } }) => {
+   const events = ordered.events && ordered.events.filter(event => !(event.id === 'undefined'));
 
+   return {
+      events,
+      loading,
+   };
+};
 const actions = {
    deleteEvent,
 };
@@ -42,12 +45,14 @@ class EventDashboard extends Component {
    }
 }
 
-EventDashboard.porpTypes = {
-   createEvent: PropTypes.func.isRequired,
-   updateEvent: PropTypes.func.isRequired,
+EventDashboard.propTypes = {
    deleteEvent: PropTypes.func.isRequired,
    loading: PropTypes.bool.isRequired,
    events: PropTypes.arrayOf(PropTypes.object),
+};
+
+EventDashboard.defaultProps = {
+   events: [],
 };
 
 export default connect(

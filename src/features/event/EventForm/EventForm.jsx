@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withFirestore } from 'react-redux-firebase'
+import { withFirestore } from 'react-redux-firebase';
 import { reduxForm, Field } from 'redux-form';
 import {
    composeValidators, combineValidators, isRequired, hasLengthGreaterThan,
@@ -23,11 +23,11 @@ const mapState = ({
    firestore: {
       ordered: { events },
    },
-}) => {
+}, { match: { params } }) => {
    let event = {};
 
-   if (events && events[0]) {
-      [event] = events;
+   if (!(Object.keys(params).length === 0) && events && events[0]) {
+      [event] = events.filter(event => event.id === params.id);
    }
 
    return {

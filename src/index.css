@@ -11,14 +11,15 @@ body {
   width: 100%;
 }
 
+ul.react-datepicker__time-list {
+  padding-inline-start: 0;
+  padding: 0 !important;
+}
+
 .react-datepicker__time-list-item {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.react-datepicker__time-list .react-datepicker__time-list-item {
-  padding: 0 !important;
 }
 
 /* navbar styles */
