@@ -19,7 +19,9 @@ const eventImageTextStyle = {
    color: 'white',
 };
 
-const EventDetailedHeader = ({ event, isHost, isGoing }) => {
+const EventDetailedHeader = ({
+   event, isHost, isGoing, goingToEvent,
+}) => {
    let eventDate;
    if (event.date) {
       eventDate = event.date.toDate();
@@ -55,7 +57,9 @@ const EventDetailedHeader = ({ event, isHost, isGoing }) => {
                   {isGoing ? (
                      <Button>Cancel My Place</Button>
                   ) : (
-                     <Button color="teal">JOIN THIS EVENT</Button>
+                     <Button onClick={() => goingToEvent(event)} color="teal">
+                        JOIN THIS EVENT
+                     </Button>
                   )}
                </Fragment>
             )}
@@ -72,12 +76,19 @@ const EventDetailedHeader = ({ event, isHost, isGoing }) => {
 
 EventDetailedHeader.propTypes = {
    event: PropTypes.shape({
-      category: PropTypes.string.isRequired,
-      date: PropTypes.object.isRequired,
-      hostedBy: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
+      category: PropTypes.string,
+      date: PropTypes.object,
+      hostedBy: PropTypes.string,
+      id: PropTypes.string,
+      title: PropTypes.string,
    }).isRequired,
+   isHost: PropTypes.bool.isRequired,
+   isGoing: PropTypes.bool,
+   goingToEvent: PropTypes.func.isRequired,
+};
+
+EventDetailedHeader.defaultProps = {
+   isGoing: false,
 };
 
 export default EventDetailedHeader;

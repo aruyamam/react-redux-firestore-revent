@@ -82,12 +82,12 @@ class EventDetailedInfo extends Component {
 
 EventDetailedInfo.propTypes = {
    event: PropTypes.shape({
-      date: PropTypes.object.isRequired,
-      description: PropTypes.string.isRequired,
+      date: PropTypes.object,
+      description: PropTypes.string,
       venueLatLng: PropTypes.shape({
-         lat: PropTypes.number.isRequired,
-         lng: PropTypes.number.isRequired,
-      }).isRequired,
+         lat: PropTypes.number,
+         lng: PropTypes.number,
+      }),
    }).isRequired,
 };
 
