@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withFirestore } from 'react-redux-firebase';
 import { Grid } from 'semantic-ui-react';
-import { toastr } from 'react-redux-toastr';
 import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
 import { objectToArray } from '../../../app/common/util/helpers';
-import { goingToEvent } from '../../user/userActions';
+import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 
 const mapState = (
    {
@@ -31,6 +30,7 @@ const mapState = (
 
 const actions = {
    goingToEvent,
+   cancelGoingToEvent,
 };
 
 class EventDetailedPage extends Component {
@@ -45,7 +45,9 @@ class EventDetailedPage extends Component {
    }
 
    render() {
-      const { auth, event, goingToEvent } = this.props;
+      const {
+         auth, cancelGoingToEvent, event, goingToEvent
+      } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
       const isHost = event.hostUid === auth.uid;
       const isGoing = attendees && attendees.some(a => a.id === auth.uid);
@@ -57,6 +59,7 @@ class EventDetailedPage extends Component {
                   event={event}
                   isHost={isHost}
                   isGoing={isGoing}
+                  cancelGoingToEvent={cancelGoingToEvent}
                   goingToEvent={goingToEvent}
                />
                <EventDetailedInfo event={event} />
