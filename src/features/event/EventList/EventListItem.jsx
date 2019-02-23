@@ -6,6 +6,7 @@ import {
    Segment, Item, Icon, Label, List, Button,
 } from 'semantic-ui-react';
 import EventListAttendee from './EventListAttendee';
+import { objectToArray } from '../../../app/common/util/helpers';
 
 class EventListItem extends Component {
    state = {};
@@ -20,7 +21,9 @@ class EventListItem extends Component {
                   <Item>
                      <Item.Image size="tiny" circular src={event.hostPhotoURL} />
                      <Item.Content>
-                        <Item.Header as="a">{event.title}</Item.Header>
+                        <Item.Header as={Link} to={`/event/${event.id}`}>
+                           {event.title}
+                        </Item.Header>
                         <Item.Description>
                            Hosted by
                            {' '}
@@ -52,11 +55,8 @@ class EventListItem extends Component {
             <Segment secondary>
                <List horizontal>
                   {event.attendees
-                     && Object.values(event.attendees).map(attendee => (
-                        <EventListAttendee
-                           key={attendee.displayName + attendee.joinDate}
-                           attendee={attendee}
-                        />
+                     && objectToArray(event.attendees).map(attendee => (
+                        <EventListAttendee key={attendee.id} attendee={attendee} />
                      ))}
                </List>
             </Segment>

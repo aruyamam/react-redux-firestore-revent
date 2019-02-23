@@ -1,16 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { List, Image } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
-class EventListAttendee extends Component {
-  render() {
-    const { attendee } = this.props;
+const EventListAttendee = ({ attendee }) => (
+   <List.Item>
+      <Image
+         as={Link}
+         to={`/profile/${attendee.id}`}
+         size="mini"
+         circular
+         src={attendee.photoURL}
+      />
+   </List.Item>
+);
 
-    return (
-      <List.Item>
-        <Image as="a" size="mini" circular src={attendee.photoURL} />
-      </List.Item>
-    );
-  }
-}
+EventListAttendee.propTypes = {
+   attendee: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      photoURL: PropTypes.string.isRequired,
+   }).isRequired,
+};
 
 export default EventListAttendee;
