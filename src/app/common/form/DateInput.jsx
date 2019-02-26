@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Form, Label } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -23,6 +24,7 @@ const DateInput = ({
             {...rest}
             placeholderText={placeholder}
             selected={value ? moment(value) : null}
+            onBlur={onBlur}
             onChange={onChange}
             {...restInput}
          />
@@ -33,6 +35,19 @@ const DateInput = ({
          )}
       </Form.Field>
    );
+};
+
+DateInput.propTypes = {
+   input: PropTypes.shape({
+      onBlur: PropTypes.func.isRequired,
+      onChange: PropTypes.func.isRequired,
+      value: PropTypes.string.isRequired,
+   }).isRequired,
+   meta: PropTypes.shape({
+      error: PropTypes.string,
+      touched: PropTypes.bool.isRequired,
+   }).isRequired,
+   placeholder: PropTypes.string.isRequired,
 };
 
 export default DateInput;
