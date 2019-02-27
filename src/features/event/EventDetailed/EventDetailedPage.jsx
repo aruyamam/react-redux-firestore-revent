@@ -10,19 +10,16 @@ import EventDetailedSidebar from './EventDetailedSidebar';
 import { objectToArray } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 
-const mapState = (
-   {
-      firebase: { auth },
-      firestore: {
-         ordered: { events },
-      },
+const mapState = ({
+   firebase: { auth },
+   firestore: {
+      ordered: { events },
    },
-   { match: { params } },
-) => {
+}) => {
    let event = {};
 
    if (events && events[0]) {
-      [event] = events.filter(event => event.id === params.id);
+      [event] = events;
    }
 
    return { event, auth };
@@ -46,7 +43,7 @@ class EventDetailedPage extends Component {
 
    render() {
       const {
-         auth, cancelGoingToEvent, event, goingToEvent
+         auth, cancelGoingToEvent, event, goingToEvent,
       } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
       const isHost = event.hostUid === auth.uid;

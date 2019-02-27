@@ -9,15 +9,17 @@ import LoadingComponent from '../../../app/layout/LoadingComponent';
 import EventActivity from '../EventActivity/EventActivity';
 
 const mapState = ({ firestore: { ordered }, async: { loading } }) => {
-   const events = ordered.events && ordered.events.filter(event => !(event.id === 'undefined'));
+   const events =
+      ordered.events &&
+      ordered.events.filter(event => !(event.id === 'undefined'));
 
    return {
       events,
-      loading,
+      loading
    };
 };
 const actions = {
-   deleteEvent,
+   deleteEvent
 };
 
 class EventDashboard extends Component {
@@ -35,7 +37,10 @@ class EventDashboard extends Component {
       return (
          <Grid>
             <Grid.Column width={10}>
-               <EventList deleteEvent={this.handleDeleteEvent} events={events} />
+               <EventList
+                  deleteEvent={this.handleDeleteEvent}
+                  events={events}
+               />
             </Grid.Column>
             <Grid.Column width={6}>
                <EventActivity />
@@ -48,14 +53,14 @@ class EventDashboard extends Component {
 EventDashboard.propTypes = {
    deleteEvent: PropTypes.func.isRequired,
    loading: PropTypes.bool.isRequired,
-   events: PropTypes.arrayOf(PropTypes.object),
+   events: PropTypes.arrayOf(PropTypes.object)
 };
 
 EventDashboard.defaultProps = {
-   events: [],
+   events: []
 };
 
 export default connect(
    mapState,
-   actions,
+   actions
 )(firestoreConnect([{ collection: 'events' }])(EventDashboard));

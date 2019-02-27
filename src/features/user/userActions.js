@@ -108,10 +108,9 @@ export const setMainPhoto = photo => async (dispatch, getState, { getFirebase })
    }
 };
 
-export const goingToEvent = event => async (dispatch, getState, { getFirestore, getFirebase }) => {
+export const goingToEvent = event => async (dispatch, getState, { getFirestore }) => {
    const firestore = getFirestore();
-   const firebase = getFirebase();
-   const user = firebase.auth().currentUser;
+   const user = firestore.auth().currentUser;
    const { photoURL } = getState().firebase.profile;
    const attendee = {
       going: true,
@@ -139,14 +138,9 @@ export const goingToEvent = event => async (dispatch, getState, { getFirestore, 
    }
 };
 
-export const cancelGoingToEvent = event => async (
-   dispatch,
-   getState,
-   { getFirestore, getFirebase },
-) => {
-   const firebase = getFirebase();
+export const cancelGoingToEvent = event => async (dispatch, getState, { getFirestore }) => {
    const firestore = getFirestore();
-   const user = firebase.auth().currentUser;
+   const user = firestore.auth().currentUser;
 
    try {
       await firestore.update(`events/${event.id}`, {
