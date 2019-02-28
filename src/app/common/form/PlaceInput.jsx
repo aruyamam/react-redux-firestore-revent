@@ -102,7 +102,7 @@ PlaceInput.propTypes = {
    input: PropTypes.shape({
       onBlur: PropTypes.func.isRequired,
    }).isRequired,
-   onSelect: PropTypes.func.isRequired,
+   onSelect: PropTypes.func,
    options: PropTypes.object.isRequired,
    meta: PropTypes.shape({
       error: PropTypes.string,

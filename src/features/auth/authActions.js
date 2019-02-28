@@ -22,13 +22,13 @@ export const registerUser = user => async (dispatch, getState, { getFirebase, ge
 
    try {
       // creat the user in auth
-      const userCredentials = await firebase
+      const createdUser = await firebase
          .auth()
          .createUserWithEmailAndPassword(user.email, user.password);
-      console.log(userCredentials);
+      console.log(createdUser);
 
       // update the auth profile
-      await userCredentials.user.updateProfile({
+      await createdUser.updateProfile({
          displayName: user.displayName,
       });
 
@@ -37,7 +37,7 @@ export const registerUser = user => async (dispatch, getState, { getFirebase, ge
          displayName: user.displayName,
          createdAt: firestore.FieldValue.serverTimestamp(),
       };
-      await firestore.set(`users/${userCredentials.user.uid}`, { ...newUser });
+      await firestore.set(`users/${createdUser.uid}`, { ...newUser });
       dispatch(closeModal());
    }
    catch (error) {

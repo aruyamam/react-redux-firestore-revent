@@ -74,8 +74,19 @@ EventDetailedPage.propTypes = {
    auth: PropTypes.shape({
       uid: PropTypes.string,
    }).isRequired,
+   cancelGoingToEvent: PropTypes.func.isRequired,
    event: PropTypes.shape({
       attendees: PropTypes.object,
+   }).isRequired,
+   firestore: PropTypes.shape({
+      setListener: PropTypes.func.isRequired,
+      unsetListener: PropTypes.func.isRequired,
+   }).isRequired,
+   goingToEvent: PropTypes.func.isRequired,
+   match: PropTypes.shape({
+      params: PropTypes.shape({
+         id: PropTypes.string.isRequired,
+      }).isRequired,
    }).isRequired,
 };
 

@@ -12,7 +12,7 @@ class EventListItem extends Component {
    state = {};
 
    render() {
-      const { event, deleteEvent } = this.props;
+      const { event } = this.props;
 
       return (
          <Segment.Group>
@@ -62,13 +62,6 @@ class EventListItem extends Component {
             </Segment>
             <Segment clearing>
                <span>{event.description}</span>
-               <Button
-                  onClick={deleteEvent(event.id)}
-                  as="a"
-                  color="red"
-                  floated="right"
-                  content="Delete"
-               />
                <Button
                   as={Link}
                   to={`/event/${event.id}`}

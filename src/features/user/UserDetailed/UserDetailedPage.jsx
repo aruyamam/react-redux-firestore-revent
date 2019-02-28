@@ -30,15 +30,21 @@ const mapState = ({ auth, firestore, firebase }, { match: { params } }) => {
    };
 };
 
-const UserDetailedPage = ({ profile, photos }) => !isEmpty(profile) && (
-   <Grid>
-      <UserDetailedHeader profile={profile} />
-      <UserDetailedDescription profile={profile} />
-      <UserDetailedSidebar />
-      {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
-      <UserDetailedEvents />
-   </Grid>
-);
+const UserDetailedPage = ({
+   auth, match, profile, photos,
+}) => {
+   const isCurrentUser = auth.uid === match.params.id;
+
+   return !isEmpty(profile) && (
+      <Grid>
+         <UserDetailedHeader profile={profile} />
+         <UserDetailedDescription profile={profile} />
+         <UserDetailedSidebar isCurrentUser={isCurrentUser} />
+         {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
+         <UserDetailedEvents />
+      </Grid>
+   );
+};
 
 export default compose(
    connect(mapState),

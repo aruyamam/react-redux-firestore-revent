@@ -115,7 +115,7 @@ export const goingToEvent = event => async (dispatch, getState, { getFirestore }
    const attendee = {
       going: true,
       joinDate: Date.now(),
-      photoURL,
+      photoURL: photoURL || '/assets/user.png',
       displayName: user.displayName,
       host: false,
    };
