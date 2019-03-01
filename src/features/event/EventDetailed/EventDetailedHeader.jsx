@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import format from 'date-fns/format';
-import {
-   Button, Header, Image, Item, Segment,
-} from 'semantic-ui-react';
+import { Button, Header, Image, Item, Segment } from 'semantic-ui-react';
 
 const eventImageStyle = {
-   filter: 'brightness(30%)',
+   filter: 'brightness(30%)'
 };
 
 const eventImageTextStyle = {
@@ -15,43 +14,92 @@ const eventImageTextStyle = {
    left: '5%',
    width: '100%',
    height: 'auto',
-   color: 'white',
+   color: 'white'
 };
 
-const EventDetailedHeader = ({ event }) => (
-   <Segment.Group>
-      <Segment basic attached="top" style={{ padding: '0' }}>
-         <Image
-            src={`/assets/categoryImages/${event.category}.jpg`}
-            fluid
-            style={eventImageStyle}
-         />
-         <Segment basic style={eventImageTextStyle}>
-            <Item.Group>
-               <Item>
-                  <Item.Content>
-                     <Header size="huge" content={event.title} style={{ color: 'white' }} />
-                     <p>{format(event.date, 'dddd Do MMMM')}</p>
-                     <p>
-                        Hosted by
-                        {' '}
-                        <strong>{event.hostedBy}</strong>
-                     </p>
-                  </Item.Content>
-               </Item>
-            </Item.Group>
+const EventDetailedHeader = ({
+   cancelGoingToEvent,
+   event,
+   isHost,
+   isGoing,
+   goingToEvent
+}) => {
+   let eventDate;
+   if (event.date) {
+      eventDate = event.date.toDate();
+   }
+
+   return (
+      <Segment.Group>
+         <Segment basic attached="top" style={{ padding: '0' }}>
+            <Image
+               src={`/assets/categoryImages/${event.category}.jpg`}
+               fluid
+               style={eventImageStyle}
+            />
+            <Segment basic style={eventImageTextStyle}>
+               <Item.Group>
+                  <Item>
+                     <Item.Content>
+                        <Header
+                           size="huge"
+                           content={event.title}
+                           style={{ color: 'white' }}
+                        />
+                        <p>{format(eventDate, 'dddd Do MMMM')}</p>
+                        <p>
+                           Hosted by <strong>{event.hostedBy}</strong>
+                        </p>
+                     </Item.Content>
+                  </Item>
+               </Item.Group>
+            </Segment>
          </Segment>
-      </Segment>
+         <Segment attached="bottom" clearing>
+            {!isHost && (
+               <Fragment>
+                  {isGoing ? (
+                     <Button onClick={() => cancelGoingToEvent(event)}>
+                        Cancel My Place
+                     </Button>
+                  ) : (
+                     <Button onClick={() => goingToEvent(event)} color="teal">
+                        JOIN THIS EVENT
+                     </Button>
+                  )}
+               </Fragment>
+            )}
 
-      <Segment attached="bottom">
-         <Button>Cancel My Place</Button>
-         <Button color="teal">JOIN THIS EVENT</Button>
+            {isHost && (
+               <Button
+                  as={Link}
+                  to={`/manage/${event.id}`}
+                  color="orange"
+                  floated="right"
+               >
+                  Manage Event
+               </Button>
+            )}
+         </Segment>
+      </Segment.Group>
+   );
+};
 
-         <Button as={Link} to={`/manage/${event.id}`} color="orange" floated="right">
-            Manage Event
-         </Button>
-      </Segment>
-   </Segment.Group>
-);
+EventDetailedHeader.propTypes = {
+   event: PropTypes.shape({
+      category: PropTypes.string,
+      date: PropTypes.object,
+      hostedBy: PropTypes.string,
+      id: PropTypes.string,
+      title: PropTypes.string
+   }).isRequired,
+   isHost: PropTypes.bool.isRequired,
+   isGoing: PropTypes.bool,
+   goingToEvent: PropTypes.func.isRequired
+};
+
+EventDetailedHeader.defaultProps = {
+   isGoing: false
+};
 
 export default EventDetailedHeader;

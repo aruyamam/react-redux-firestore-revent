@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
    Item, Label, List, Segment,
 } from 'semantic-ui-react';
@@ -24,28 +25,28 @@ const EventDetailedSidebar = ({ attendees }) => (
          {' '}
          {attendees && attendees.length === 1 ? 'Person' : 'People'}
          {' '}
-Going
+         Going
       </Segment>
       <Segment attached>
          <List relaxed divided>
             {attendees
-                  && attendees.map(attendee => (
-                     <Item key={attendee.id} style={{ position: 'relative' }}>
-                        <Label ribbon="right" color="orange" style={{ position: 'absolute' }}>
-                           Host
-                        </Label>
-                        <Item.Content verticalAlign="middle" style={itemContentStyle}>
-                           <Item.Header as="h3">
-                              <a>{attendee.name}</a>
-                           </Item.Header>
-                           <Item.Image
-                              src={attendee.photoURL}
-                              size="tiny"
-                              style={{ marginRight: '1rem' }}
-                           />
-                        </Item.Content>
-                     </Item>
-                  ))}
+               && attendees.map(attendee => (
+                  <Item key={attendee.id} style={{ position: 'relative' }}>
+                     <Label ribbon="right" color="orange" style={{ position: 'absolute' }}>
+                        Host
+                     </Label>
+                     <Item.Content verticalAlign="middle" style={itemContentStyle}>
+                        <Item.Header as="h3">
+                           <Link to={`/profile/${attendee.id}`}>{attendee.displayName}</Link>
+                        </Item.Header>
+                        <Item.Image
+                           src={attendee.photoURL}
+                           size="tiny"
+                           style={{ marginRight: '1rem' }}
+                        />
+                     </Item.Content>
+                  </Item>
+               ))}
          </List>
       </Segment>
    </div>

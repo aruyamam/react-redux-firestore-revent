@@ -51,12 +51,18 @@ const mapState = state => ({
 });
 
 class PhotosPage extends Component {
-   state = {
-      files: [],
-      fileName: '',
-      cropResult: null,
-      image: {},
-   };
+   constructor(props) {
+      super(props);
+
+      this.state = {
+         files: [],
+         fileName: '',
+         cropResult: null,
+         image: {},
+      };
+
+      this.cropperRef = React.createRef();
+   }
 
    uploadImage = async () => {
       const { image, fileName } = this.state;
@@ -98,11 +104,11 @@ class PhotosPage extends Component {
    };
 
    cropImage = () => {
-      if (typeof this.refs.cropper.getCroppedCanvas() === 'undefined') {
+      if (typeof this.cropperRef.current.getCroppedCanvas() === 'undefined') {
          return;
       }
 
-      this.refs.cropper.getCroppedCanvas().toBlob((blob) => {
+      this.cropperRef.current.getCroppedCanvas().toBlob((blob) => {
          const imageUrl = URL.createObjectURL(blob);
          this.setState({
             cropResult: imageUrl,
@@ -160,7 +166,7 @@ class PhotosPage extends Component {
                         cropBoxResizable
                         dragMode="move"
                         guides={false}
-                        ref="cropper"
+                        ref={this.cropperRef}
                         scalable
                         src={files[0].preview}
                         style={{ height: 200, width: '100%' }}
@@ -223,15 +229,22 @@ class PhotosPage extends Component {
    }
 }
 
+PhotosPage.defaultProps = {
+   photos: [],
+   profile: {
+      photoURl: '',
+   },
+};
+
 PhotosPage.propTypes = {
    photos: PropTypes.arrayOf(
       PropTypes.shape({
-         id: PropTypes.string.isRequired,
-         url: PropTypes.string.isRequired,
+         id: PropTypes.string,
+         url: PropTypes.string,
       }),
    ),
    profile: PropTypes.shape({
-      photoURL: PropTypes.string.isRequired,
+      photoURL: PropTypes.string,
    }),
    uploadProfileImage: PropTypes.func.isRequired,
    deletePhoto: PropTypes.func.isRequired,

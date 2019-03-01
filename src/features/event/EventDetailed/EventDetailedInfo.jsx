@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 import {
    Button, Grid, Icon, Segment,
@@ -24,6 +25,11 @@ class EventDetailedInfo extends Component {
       const { event } = this.props;
       const { showMap } = this.state;
 
+      let eventDate;
+      if (event.date) {
+         eventDate = event.date.toDate();
+      }
+
       return (
          <Segment.Group>
             <Segment>
@@ -43,7 +49,7 @@ class EventDetailedInfo extends Component {
                   </Grid.Column>
                   <Grid.Column width={15}>
                      <span>
-                        {`${format(event.date, 'dddd Do MMMM')} at ${format(event.date, 'h:mm A')}`}
+                        {`${format(eventDate, 'dddd Do MMMM')} at ${format(eventDate, 'h:mm A')}`}
                      </span>
                   </Grid.Column>
                </Grid>
@@ -73,5 +79,16 @@ class EventDetailedInfo extends Component {
       );
    }
 }
+
+EventDetailedInfo.propTypes = {
+   event: PropTypes.shape({
+      date: PropTypes.object,
+      description: PropTypes.string,
+      venueLatLng: PropTypes.shape({
+         lat: PropTypes.number,
+         lng: PropTypes.number,
+      }),
+   }).isRequired,
+};
 
 export default EventDetailedInfo;

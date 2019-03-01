@@ -2,40 +2,47 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withFirestore } from 'react-redux-firebase';
 import { reduxForm, Field } from 'redux-form';
 import {
-   composeValidators, combineValidators, isRequired, hasLengthGreaterThan,
+   composeValidators,
+   combineValidators,
+   isRequired,
+   hasLengthGreaterThan,
 } from 'revalidate';
-import cuid from 'cuid';
-import moment from 'moment';
 import {
    Segment, Form, Button, Grid, Header,
 } from 'semantic-ui-react';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import Script from 'react-load-script';
-import { createEvent, updateEvent } from '../eventActions';
+import { cancelToggle, createEvent, updateEvent } from '../eventActions';
 import TextInput from '../../../app/common/form/TextInput';
 import TextArea from '../../../app/common/form/TextArea';
 import SelectInput from '../../../app/common/form/SelectInput';
 import DateInput from '../../../app/common/form/DateInput';
 import PlaceInput from '../../../app/common/form/PlaceInput';
 
-const mapState = (state, ownProps) => {
-   const { events } = state;
-   const eventId = ownProps.match.params.id;
-
+const mapState = (
+   {
+      firestore: {
+         ordered: { events },
+      },
+   },
+) => {
    let event = {};
 
-   if (eventId && events.length > 0) {
-      [event] = events.filter(event => event.id === eventId);
+   if (events && events[0]) {
+      [event] = events;
    }
 
    return {
       initialValues: event,
+      event,
    };
 };
 
 const actions = {
+   cancelToggle,
    createEvent,
    updateEvent,
 };
@@ -54,7 +61,9 @@ const validate = combineValidators({
    cateogry: isRequired({ message: 'Please provide a ctegory' }),
    description: composeValidators(
       isRequired({ message: 'Please enter a description' }),
-      hasLengthGreaterThan(4)({ message: 'Description needs to be at least 5 characters' }),
+      hasLengthGreaterThan(4)({
+         message: 'Description needs to be at least 5 characters'
+      }),
    )(),
    city: isRequired('city'),
    venue: isRequired('venue'),
@@ -68,6 +77,16 @@ class EventForm extends Component {
       scriptLoaded: false,
    };
 
+   async componentDidMount() {
+      const { firestore, match } = this.props;
+      await firestore.setListener(`events/${match.params.id}`);
+   }
+
+   async componentWillUnmount() {
+      const { firestore, match } = this.props;
+      await firestore.unsetListener(`events/${match.params.id}`);
+   }
+
    handleScriptLoaded = () => this.setState({ scriptLoaded: true });
 
    handleCitySelect = (selectedCity) => {
@@ -77,8 +96,8 @@ class EventForm extends Component {
             this.setState({ cityLatLng: latlng });
          })
          .then(() => {
-            this.props.change('city', selectedCity)
-         })
+            this.props.change('city', selectedCity);
+         });
    };
 
    handleVenueSelect = (selectedVenue) => {
@@ -88,38 +107,46 @@ class EventForm extends Component {
             this.setState({ venueLatLng: latlng });
          })
          .then(() => {
-            this.props.change('venue', selectedVenue)
-         })
+            this.props.change('venue', selectedVenue);
+         });
    };
 
    onFormSubmit = (inputValues) => {
       const values = inputValues;
-      values.date = moment(values.date).format();
-      values.venueLatLng = this.state.venueLatLng;
       const {
-         initialValues, updateEvent, createEvent, history,
+         event,
+         initialValues,
+         updateEvent,
+         createEvent,
+         history,
       } = this.props;
 
+      values.venueLatLng = this.state.venueLatLng;
+
       if (initialValues.id) {
+         if (Object.keys(values.venueLatLng).length === 0) {
+            values.venueLatLng = event.venueLatLng;
+         }
+
          updateEvent(values);
          history.goBack();
       }
       else {
-         const newEvent = {
-            ...values,
-            id: cuid(),
-            hostPhotoURL: '/assets/user.png',
-            hostedBy: 'Bob',
-         };
-
-         createEvent(newEvent);
+         console.log(values);
+         createEvent(values);
          history.push('/events');
       }
    };
 
    render() {
       const {
-         history, handleSubmit, invalid, pristine, submitting,
+         cancelToggle,
+         event,
+         history,
+         handleSubmit,
+         invalid,
+         pristine,
+         submitting,
       } = this.props;
       const { cityLatLng, scriptLoaded } = this.state;
 
@@ -155,7 +182,11 @@ class EventForm extends Component {
                         component={TextArea}
                         placeholder="Tell us about your event"
                      />
-                     <Header sub color="teal" content="Event Location Details" />
+                     <Header
+                        sub
+                        color="teal"
+                        content="Event Location Details"
+                     />
                      <Field
                         name="city"
                         type="text"
@@ -172,7 +203,7 @@ class EventForm extends Component {
                            options={{
                               location: new google.maps.LatLng(cityLatLng),
                               radius: 1000,
-                              types: ['establishment'],
+                              types: ['establishment']
                            }}
                            placeholder="Event Venue"
                            onSelect={this.handleVenueSelect}
@@ -187,12 +218,25 @@ class EventForm extends Component {
                         showTimeSelect
                         placeholder="Date and Time of event"
                      />
-                     <Button type="submit" positive disabled={invalid || submitting || pristine}>
+                     <Button
+                        type="submit"
+                        positive
+                        disabled={invalid || submitting || pristine}
+                     >
                         Submit
                      </Button>
                      <Button onClick={history.goBack} type="button">
                         Cancel
                      </Button>
+                     <Button
+                        onClick={() => cancelToggle(!event.cancelled, event.id)}
+                        color={event.cancelled ? 'green' : 'red'}
+                        content={
+                           event.cancelled ? 'Reactivate Event' : 'Cancel event'
+                        }
+                        floated="right"
+                        type="button"
+                     />
                   </Form>
                </Segment>
             </Grid.Column>
@@ -202,18 +246,30 @@ class EventForm extends Component {
 }
 
 EventForm.propTypes = {
+   cancelToggle: PropTypes.func.isRequired,
    createEvent: PropTypes.func.isRequired,
    updateEvent: PropTypes.func.isRequired,
+   firestore: PropTypes.shape({
+      setListener: PropTypes.func.isRequired,
+      unsetListener: PropTypes.func.isRequired,
+   }).isRequired,
    history: PropTypes.shape({
       push: PropTypes.func.isRequired,
       goBack: PropTypes.func.isRequired,
    }).isRequired,
+   event: PropTypes.shape({
+      cancelled: PropTypes.bool,
+      venueLatLng: PropTypes.shape({
+         lat: PropTypes.number,
+         lng: PropTypes.number,
+      }),
+   }).isRequired,
    handleSubmit: PropTypes.func.isRequired,
    initialValues: PropTypes.shape({
-      attendees: PropTypes.arrayOf(PropTypes.object),
+      attendees: PropTypes.object,
       category: PropTypes.string,
       city: PropTypes.string,
-      date: PropTypes.string,
+      date: PropTypes.object,
       description: PropTypes.string,
       hostPhotoURL: PropTypes.string,
       hostedBy: PropTypes.string,
@@ -222,11 +278,22 @@ EventForm.propTypes = {
       veneue: PropTypes.string,
    }).isRequired,
    invalid: PropTypes.bool.isRequired,
+   match: PropTypes.shape({
+      params: PropTypes.shape({
+         id: PropTypes.string,
+      }).isRequired,
+   }).isRequired,
    pristine: PropTypes.bool.isRequired,
    submitting: PropTypes.bool.isRequired,
 };
 
-export default connect(
-   mapState,
-   actions,
-)(reduxForm({ form: 'eventForm', enableReinitialize: true, validate })(EventForm));
+export default withFirestore(
+   connect(
+      mapState,
+      actions,
+   )(
+      reduxForm({ form: 'eventForm', enableReinitialize: true, validate })(
+         EventForm,
+      ),
+   ),
+);

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Form, Label, List } from 'semantic-ui-react';
 import Script from 'react-load-script';
 import PlacesAutocomplete from 'react-places-autocomplete';
@@ -31,7 +32,7 @@ class PlaceInput extends Component {
    render() {
       const { scriptLoaded } = this.state;
       const {
-         input: { value, onChange },
+         input,
          width,
          onSelect,
          placeholder,
@@ -49,16 +50,16 @@ class PlaceInput extends Component {
             />
             {scriptLoaded && (
                <PlacesAutocomplete
-                  value={value}
+                  value={input.value}
                   searchOptions={options}
-                  onChange={onChange}
+                  onChange={input.onChange}
                   onSelect={onSelect}
                >
                   {({
                      getInputProps, suggestions, getSuggestionItemProps, loading,
                   }) => (
                      <div style={{ position: 'relative' }}>
-                        <input {...getInputProps({ placeholder })} />
+                        <input {...getInputProps({ placeholder, onBlur: input.onBlur })} />
                         {loading && (
                            <List style={autocompleteStyle}>
                               <List.Item style={autocompleteItemStyle}>Loading...</List.Item>
@@ -87,10 +88,27 @@ class PlaceInput extends Component {
                   )}
                </PlacesAutocomplete>
             )}
-            {touched && error && <Label>{error}</Label>}
+            {touched && error && (
+               <Label basic color="red">
+                  {error}
+               </Label>
+            )}
          </Form.Field>
       );
    }
 }
+
+PlaceInput.propTypes = {
+   input: PropTypes.shape({
+      onBlur: PropTypes.func.isRequired,
+   }).isRequired,
+   onSelect: PropTypes.func,
+   options: PropTypes.object.isRequired,
+   meta: PropTypes.shape({
+      error: PropTypes.string,
+      touched: PropTypes.bool.isRequired,
+   }).isRequired,
+   placeholder: PropTypes.string.isRequired,
+};
 
 export default PlaceInput;
