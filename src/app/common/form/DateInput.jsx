@@ -41,7 +41,7 @@ DateInput.propTypes = {
    input: PropTypes.shape({
       onBlur: PropTypes.func.isRequired,
       onChange: PropTypes.func.isRequired,
-      value: PropTypes.string.isRequired,
+      value: PropTypes.object,
    }).isRequired,
    meta: PropTypes.shape({
       error: PropTypes.string,
