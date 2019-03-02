@@ -14,7 +14,7 @@ const DateInput = ({
    meta: { touched, error },
    ...rest
 }) => {
-   if (value) {
+   if (value && typeof value === 'object') {
       value = moment(value, 'X');
    }
 

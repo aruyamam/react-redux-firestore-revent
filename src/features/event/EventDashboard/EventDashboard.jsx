@@ -1,33 +1,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { firestoreConnect, isEmpty, isLoaded } from 'react-redux-firebase';
+import { firestoreConnect } from 'react-redux-firebase';
 import { Grid } from 'semantic-ui-react';
 import EventList from '../EventList/EventList';
-import { deleteEvent } from '../eventActions';
+import { getEventsForDashboard } from '../eventActions';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import EventActivity from '../EventActivity/EventActivity';
 
-const mapState = ({
-   firestore: {
-      ordered: { events },
-   },
-}) => ({
+const mapState = ({ events, async: { loading } }) => ({
    events,
+   loading,
 });
 const actions = {
-   deleteEvent,
+   getEventsForDashboard,
 };
 
 class EventDashboard extends Component {
+   componentDidMount() {
+      this.props.getEventsForDashboard();
+   }
+
    handleDeleteEvent = eventId => () => {
       this.props.deleteEvent(eventId);
    };
 
    render() {
-      const { events } = this.props;
+      const { events, loading } = this.props;
 
-      if (!isLoaded(events) || isEmpty(events)) {
+      if (loading) {
          return <LoadingComponent inverted />;
       }
 
@@ -45,8 +46,8 @@ class EventDashboard extends Component {
 }
 
 EventDashboard.propTypes = {
-   deleteEvent: PropTypes.func.isRequired,
    events: PropTypes.arrayOf(PropTypes.object),
+   loading: PropTypes.bool.isRequired,
 };
 
 EventDashboard.defaultProps = {

@@ -1,14 +1,9 @@
 import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
-import { DELETE_EVENT, FETCH_EVENTS } from './eventConstants';
+import { FETCH_EVENTS } from './eventConstants';
 import { asyncActionStart, asyncActionFinish, asyncActionError } from '../async/asyncActions';
-import fetchSampleData from '../../app/data/mockApi';
 import { createNewEvent } from '../../app/common/util/helpers';
-
-export const fetchEvents = events => ({
-   type: FETCH_EVENTS,
-   payload: events,
-});
+import firebase from '../../app/config/firebase';
 
 export const createEvent = event => async (dispatch, getState, { getFirestore, getFirebase }) => {
    const firestore = getFirestore();
@@ -70,18 +65,22 @@ export const cancelToggle = (cancelled, eventId) => async (
    }
 };
 
-export const deleteEvent = eventId => ({
-   type: DELETE_EVENT,
-   payload: {
-      eventId,
-   },
-});
-
-export const loadEvent = () => async (dispatch) => {
+export const getEventsForDashboard = () => async (dispatch, getState) => {
+   const today = new Date(Date.now());
+   const firestore = firebase.firestore();
+   const eventsQuery = firestore.collection('events').where('date', '>=', today);
+   console.log(eventsQuery);
    try {
       dispatch(asyncActionStart());
-      const events = await fetchSampleData();
-      dispatch(fetchEvents(events));
+      const querySnap = await eventsQuery.get();
+      const events = [];
+
+      for (let i = 0; i < querySnap.docs.length; i++) {
+         const evt = { ...querySnap.docs[i].data(), id: querySnap.docs[i].id };
+         events.push(evt);
+      }
+
+      dispatch({ type: FETCH_EVENTS, payload: { events } });
       dispatch(asyncActionFinish());
    }
    catch (error) {
