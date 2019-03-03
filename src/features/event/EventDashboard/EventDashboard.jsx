@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { Button, Grid } from 'semantic-ui-react';
+import { Grid, Loader } from 'semantic-ui-react';
 import EventList from '../EventList/EventList';
 import { getEventsForDashboard } from '../eventActions';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
@@ -55,10 +55,6 @@ class EventDashboard extends Component {
       }
    };
 
-   handleDeleteEvent = eventId => () => {
-      this.props.deleteEvent(eventId);
-   };
-
    render() {
       const { loading } = this.props;
       const { loadedEvents, loadingInitial, moreEvents } = this.state;
@@ -70,18 +66,18 @@ class EventDashboard extends Component {
       return (
          <Grid>
             <Grid.Column width={10}>
-               <EventList deleteEvent={this.handleDeleteEvent} events={loadedEvents} />
-               <Button
-                  onClick={this.getNextEvents}
-                  color="green"
-                  content="More"
-                  disabled={!moreEvents}
-                  floated="right"
+               <EventList
+                  events={loadedEvents}
+                  getNextEvents={this.getNextEvents}
                   loading={loading}
+                  moreEvents={moreEvents}
                />
             </Grid.Column>
             <Grid.Column width={6}>
                <EventActivity />
+            </Grid.Column>
+            <Grid.Column width={10}>
+               <Loader active={loading} />
             </Grid.Column>
          </Grid>
       );

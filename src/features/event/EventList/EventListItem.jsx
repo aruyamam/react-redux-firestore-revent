@@ -76,7 +76,6 @@ class EventListItem extends Component {
 }
 
 EventListItem.propTypes = {
-   deleteEvent: PropTypes.func.isRequired,
    event: PropTypes.shape({
       attendees: PropTypes.object.isRequired,
       date: PropTypes.object.isRequired,
