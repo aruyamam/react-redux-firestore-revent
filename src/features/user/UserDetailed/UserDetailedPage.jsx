@@ -13,7 +13,7 @@ import userDetailedQuery from '../userQueries';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { getUserEvents } from '../userActions';
 
-const mapState = ({ auth, firestore, firebase }, { match: { params } }) => {
+const mapState = ({ auth, async, events, firestore, firebase }, { match: { params } }) => {
    let userUid = null;
    let profile = {};
 
@@ -26,11 +26,11 @@ const mapState = ({ auth, firestore, firebase }, { match: { params } }) => {
       userUid = params.id;
    }
 
-   console.log(firestore.ordered);
-
    return {
       profile,
       userUid,
+      events,
+      eventsLoading: async.loading,
       auth: firebase.auth,
       photos: firestore.ordered.photos,
       requesting: firestore.status.requesting,
@@ -50,7 +50,7 @@ class UserDetailedPage extends Component {
 
    render() {
       const {
-         auth, match, photos, profile, requesting,
+         auth, events, eventsLoading, match, photos, profile, requesting,
       } = this.props;
 
       const isCurrentUser = auth.uid === match.params.id;
@@ -66,16 +66,22 @@ class UserDetailedPage extends Component {
             <UserDetailedDescription profile={profile} />
             <UserDetailedSidebar isCurrentUser={isCurrentUser} />
             {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
-            <UserDetailedEvents />
+            <UserDetailedEvents events={events} eventsLoading={eventsLoading} />
          </Grid>
       );
    }
 }
 
+UserDetailedPage.defaultProps = {
+   photos: [],
+};
+
 UserDetailedPage.propTypes = {
    auth: PropTypes.shape({
       uid: PropTypes.string.isRequired,
    }).isRequired,
+   events: PropTypes.arrayOf(PropTypes.object).isRequired,
+   eventsLoading: PropTypes.bool.isRequired,
    getUserEvents: PropTypes.func.isRequired,
    match: PropTypes.shape({
       params: PropTypes.shape({
@@ -85,6 +91,7 @@ UserDetailedPage.propTypes = {
    photos: PropTypes.arrayOf(PropTypes.object),
    profile: PropTypes.object.isRequired,
    requesting: PropTypes.object.isRequired,
+   userUid: PropTypes.string.isRequired,
 };
 
 export default compose(
