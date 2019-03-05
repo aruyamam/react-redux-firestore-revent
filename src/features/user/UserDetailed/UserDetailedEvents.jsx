@@ -3,23 +3,30 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import format from 'date-fns/format';
 import {
-   Card, Grid, Header, Image, Menu, Segment,
+   Card, Grid, Header, Image, Segment, Tab,
 } from 'semantic-ui-react';
 
-const UserDetailedEvents = ({ events, eventsLoading }) => (
+const panes = [
+   { menuItem: 'All Events', pane: { key: 'allEvents' } },
+   { menuItem: 'Past Events', pane: { key: 'pastEvents' } },
+   { menuItem: 'Future Events', pane: { key: 'futureEvents' } },
+   { menuItem: 'Hosting', pane: { key: 'hosted' } },
+];
+
+const UserDetailedEvents = ({ changeTab, events, eventsLoading }) => (
    <Grid.Column width={12}>
       <Segment attached loading={eventsLoading}>
          <Header content="Events" icon="calendar outline" />
-         <Menu secondary pointing>
-            <Menu.Item active name="All Events" />
-            <Menu.Item name="Past Events" />
-            <Menu.Item name="Future Events" />
-            <Menu.Item name="Events Hosted" />
-         </Menu>
+         <Tab
+            onTabChange={(e, data) => changeTab(e, data)}
+            menu={{ secondary: true, pointing: true }}
+            panes={panes}
+         />
+         <br />
          <Card.Group itemsPerRow={5}>
             {events
                && events.map(event => (
-                  <Card as={Link} to={`/events/${event.id}`} key={event.id}>
+                  <Card as={Link} to={`/event/${event.id}`} key={event.id}>
                      <Image src={`/assets/categoryImages/${event.category}.jpg`} />
                      <Card.Content>
                         <Card.Header textAlign="center">{event.title}</Card.Header>
@@ -36,6 +43,7 @@ const UserDetailedEvents = ({ events, eventsLoading }) => (
 );
 
 UserDetailedEvents.propTypes = {
+   changeTab: PropTypes.func.isRequired,
    events: PropTypes.arrayOf(
       PropTypes.shape({
          category: PropTypes.string,

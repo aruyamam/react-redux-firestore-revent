@@ -48,6 +48,11 @@ class UserDetailedPage extends Component {
       console.log(events);
    }
 
+   changeTab = (e, data) => {
+      const { getUserEvents, userUid } = this.props;
+      getUserEvents(userUid, data.activeIndex);
+   }
+
    render() {
       const {
          auth, events, eventsLoading, match, photos, profile, requesting,
@@ -66,7 +71,11 @@ class UserDetailedPage extends Component {
             <UserDetailedDescription profile={profile} />
             <UserDetailedSidebar isCurrentUser={isCurrentUser} />
             {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
-            <UserDetailedEvents events={events} eventsLoading={eventsLoading} />
+            <UserDetailedEvents
+               changeTab={this.changeTab}
+               events={events}
+               eventsLoading={eventsLoading}
+            />
          </Grid>
       );
    }
