@@ -36,6 +36,9 @@ EventList.propTypes = {
          id: PropTypes.string.isRequired,
       }),
    ).isRequired,
+   getNextEvents: PropTypes.func.isRequired,
+   loading: PropTypes.bool.isRequired,
+   moreEvents: PropTypes.bool.isRequired,
 };
 
 export default EventList;
