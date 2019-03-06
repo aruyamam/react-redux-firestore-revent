@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withFirestore } from 'react-redux-firebase';
+import { withFirestore, firebaseConnect } from 'react-redux-firebase';
+import { compose } from 'redux'
 import { Grid } from 'semantic-ui-react';
 import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
@@ -9,6 +10,7 @@ import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
 import { objectToArray } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
+import { addEventComment } from '../eventActions'
 
 const mapState = ({
    firebase: { auth },
@@ -26,8 +28,9 @@ const mapState = ({
 };
 
 const actions = {
-   goingToEvent,
+   addEventComment,
    cancelGoingToEvent,
+   goingToEvent,
 };
 
 class EventDetailedPage extends Component {
@@ -43,7 +46,7 @@ class EventDetailedPage extends Component {
 
    render() {
       const {
-         auth, cancelGoingToEvent, event, goingToEvent,
+         addEventComment, auth, cancelGoingToEvent, event, goingToEvent,
       } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
       const isHost = event.hostUid === auth.uid;
@@ -60,7 +63,7 @@ class EventDetailedPage extends Component {
                   goingToEvent={goingToEvent}
                />
                <EventDetailedInfo event={event} />
-               <EventDetailedChat />
+               <EventDetailedChat addEventComment={addEventComment} eventId={event.id} />
             </Grid.Column>
             <Grid.Column width={6}>
                <EventDetailedSidebar attendees={attendees} />
@@ -71,6 +74,7 @@ class EventDetailedPage extends Component {
 }
 
 EventDetailedPage.propTypes = {
+   addEventComment: PropTypes.func.isRequired,
    auth: PropTypes.shape({
       uid: PropTypes.string,
    }).isRequired,
@@ -90,9 +94,9 @@ EventDetailedPage.propTypes = {
    }).isRequired,
 };
 
-export default withFirestore(
-   connect(
-      mapState,
-      actions,
-   )(EventDetailedPage),
-);
+export default compose(
+   withFirestore,
+   (connect(mapState, actions),
+   firebaseConnect(props => ([`event_chat/${props.match.params.id}`]))
+   ),
+)(EventDetailedPage);
