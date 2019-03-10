@@ -25,7 +25,7 @@ class EventDashboard extends Component {
 
    async componentDidMount() {
       const next = await this.props.getEventsForDashboard();
-      console.log(next);
+      // console.log(next);
 
       if (next && next.docs && next.docs.length > 1) {
          this.setState({
@@ -48,7 +48,7 @@ class EventDashboard extends Component {
       const lastEvent = events && events[events.length - 1];
       // console.log(lastEvent);
       const next = await getEventsForDashboard(lastEvent);
-      console.log(next);
+      // console.log(next);
 
       if (next && next.docs && next.docs.length <= 1) {
          this.setState({ moreEvents: false });

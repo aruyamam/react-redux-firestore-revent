@@ -114,11 +114,16 @@ export const getEventsForDashboard = lastEvent => async (dispatch, getState) => 
    }
 };
 
-export const addEventComment = (eventId, values) => async (dispatch, getState, { getFirebase }) => {
+export const addEventComment = (eventId, values, parentId) => async (
+   dispatch,
+   getState,
+   { getFirebase },
+) => {
    const firebase = getFirebase();
    const { profile } = getState().firebase;
    const user = await firebase.auth().currentUser;
    const newComment = {
+      parentId,
       displayName: profile.displayName,
       photoURL: profile.photoURL || '/assets/user.png',
       uid: user.uid,

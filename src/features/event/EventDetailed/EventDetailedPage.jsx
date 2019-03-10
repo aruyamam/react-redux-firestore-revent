@@ -8,7 +8,7 @@ import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
-import { objectToArray } from '../../../app/common/util/helpers';
+import { createDataTree, objectToArray } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 import { addEventComment } from '../eventActions';
 
@@ -30,7 +30,7 @@ const mapState = (
    return {
       auth,
       event,
-      eventChat: !isEmpty(data.event_chat) && objectToArray(data.event_chat[params.id]),
+      eventChat: isEmpty(data.event_chat) ? [] : objectToArray(data.event_chat[params.id]),
    };
 };
 
@@ -57,12 +57,15 @@ class EventDetailedPage extends Component {
          auth,
          cancelGoingToEvent,
          event,
-         eventChat,
          goingToEvent,
       } = this.props;
+      let { eventChat } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
       const isHost = event.hostUid === auth.uid;
       const isGoing = attendees && attendees.some(a => a.id === auth.uid);
+      if (eventChat.length > 0) {
+         eventChat = createDataTree(eventChat);
+      }
 
       return (
          <Grid>
@@ -89,6 +92,10 @@ class EventDetailedPage extends Component {
    }
 }
 
+EventDetailedPage.defaultProps = {
+   eventChat: [],
+};
+
 EventDetailedPage.propTypes = {
    addEventComment: PropTypes.func.isRequired,
    auth: PropTypes.shape({
@@ -98,6 +105,9 @@ EventDetailedPage.propTypes = {
    event: PropTypes.shape({
       attendees: PropTypes.object,
    }).isRequired,
+   eventChat: PropTypes.arrayOf(
+      PropTypes.object,
+   ),
    firestore: PropTypes.shape({
       setListener: PropTypes.func.isRequired,
       unsetListener: PropTypes.func.isRequired,
