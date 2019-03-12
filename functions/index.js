@@ -21,7 +21,7 @@ exports.createActivity = functions.firestore
 
       console.log(newEvent);
 
-      const activity = newActivity('newEvenet', newEvent, event.id);
+      const activity = newActivity('newEvent', newEvent, event.id);
 
       console.log(activity);
 
