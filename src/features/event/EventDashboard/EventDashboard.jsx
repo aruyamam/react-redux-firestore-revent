@@ -30,11 +30,12 @@ class EventDashboard extends Component {
       moreEvents: false,
       loadingInitial: true,
       loadedEvents: [],
+      contextRef: {},
    };
 
    async componentDidMount() {
-      const next = await this.props.getEventsForDashboard();
-      // console.log(next);
+      const { getEventsForDashboard } = this.props;
+      const next = await getEventsForDashboard();
 
       if (next && next.docs && next.docs.length > 1) {
          this.setState({
@@ -45,9 +46,12 @@ class EventDashboard extends Component {
    }
 
    componentWillReceiveProps(nextProps) {
-      if (this.props.events !== nextProps.events) {
+      const { events } = this.props;
+      const { loadedEvents } = this.state;
+
+      if (events !== nextProps.events) {
          this.setState({
-            loadedEvents: [...this.state.loadedEvents, ...nextProps.events],
+            loadedEvents: [...loadedEvents, ...nextProps.events],
          });
       }
    }
@@ -55,18 +59,20 @@ class EventDashboard extends Component {
    getNextEvents = async () => {
       const { events, getEventsForDashboard } = this.props;
       const lastEvent = events && events[events.length - 1];
-      // console.log(lastEvent);
       const next = await getEventsForDashboard(lastEvent);
-      // console.log(next);
 
       if (next && next.docs && next.docs.length <= 1) {
          this.setState({ moreEvents: false });
       }
    };
 
+   handleContextRef = contextRef => this.setState({ contextRef });
+
    render() {
       const { activities, loading } = this.props;
-      const { loadedEvents, loadingInitial, moreEvents } = this.state;
+      const {
+         contextRef, loadedEvents, loadingInitial, moreEvents,
+      } = this.state;
 
       if (loadingInitial) {
          return <LoadingComponent inverted />;
@@ -75,15 +81,17 @@ class EventDashboard extends Component {
       return (
          <Grid>
             <Grid.Column width={10}>
-               <EventList
-                  events={loadedEvents}
-                  getNextEvents={this.getNextEvents}
-                  loading={loading}
-                  moreEvents={moreEvents}
-               />
+               <div ref={this.handleContextRef}>
+                  <EventList
+                     events={loadedEvents}
+                     getNextEvents={this.getNextEvents}
+                     loading={loading}
+                     moreEvents={moreEvents}
+                  />
+               </div>
             </Grid.Column>
             <Grid.Column width={6}>
-               <EventActivity activities={activities} />
+               <EventActivity activities={activities} contextRef={contextRef} />
             </Grid.Column>
             <Grid.Column width={10}>
                <Loader active={loading} />
@@ -94,12 +102,14 @@ class EventDashboard extends Component {
 }
 
 EventDashboard.propTypes = {
+   activities: PropTypes.arrayOf(PropTypes.object),
    events: PropTypes.arrayOf(PropTypes.object),
    getEventsForDashboard: PropTypes.func.isRequired,
    loading: PropTypes.bool.isRequired,
 };
 
 EventDashboard.defaultProps = {
+   activities: [],
    events: [],
 };
 
