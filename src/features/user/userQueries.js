@@ -1,4 +1,5 @@
-const userDetailedQuery = ({ auth, userUid }) => {
+const userDetailedQuery = ({ auth, userUid, match }) => {
+   // console.log(auth, userUid);
    if (userUid !== null) {
       return [
          {
@@ -11,6 +12,12 @@ const userDetailedQuery = ({ auth, userUid }) => {
             doc: userUid,
             subcollections: [{ collection: 'photos' }],
             storeAs: 'photos',
+         },
+         {
+            collection: 'users',
+            doc: auth.uid,
+            subcollections: [{ collection: 'following', doc: match.params.id }],
+            storeAs: 'following',
          },
       ];
    }
