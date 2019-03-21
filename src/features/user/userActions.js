@@ -96,23 +96,61 @@ export const deletePhoto = photo => async (dispatch, getState, { getFirebase, ge
    }
 };
 
-export const setMainPhoto = photo => async (dispatch, getState, { getFirebase }) => {
-   const firebase = getFirebase();
+export const setMainPhoto = photo => async (dispatch, getState) => {
+   dispatch(asyncActionStart());
+   const firestore = firebase.firestore();
+   const user = firebase.auth().currentUser;
+   const today = new Date(Date.now());
+   const userDocRef = firestore.collection('users').doc(user.uid);
+   const eventAttendeeRef = firestore.collection('event_attendee');
 
    try {
-      return await firebase.updateProfile({
+      const batch = firestore.batch();
+
+      await batch.update(userDocRef, {
          photoURL: photo.url,
       });
+
+      const eventQuery = await eventAttendeeRef
+         .where('userUid', '==', user.uid)
+         .where('eventDate', '>', today);
+
+      const eventQuerySnap = await eventQuery.get();
+
+      for (let i = 0; i < eventQuerySnap.docs.length; i++) {
+         const eventDocRef = await firestore
+            .collection('events')
+            .doc(eventQuerySnap.docs[i].data().eventId);
+         const event = await eventDocRef.get();
+
+         if (event.data().hostUid === user.uid) {
+            batch.update(eventDocRef, {
+               hostPhotoURL: photo.url,
+               [`attendees.${user.uid}.photoURL`]: photo.url,
+            });
+         }
+         else {
+            batch.update(eventDocRef, {
+               [`attendees.${user.uid}.photoURL`]: photo.url,
+            });
+         }
+      }
+
+      console.log(batch);
+      await batch.commit();
+      dispatch(asyncActionFinish());
    }
    catch (error) {
       console.log(error);
+      dispatch(asyncActionError());
       throw new Error('Problem setting main photo');
    }
 };
 
-export const goingToEvent = event => async (dispatch, getState, { getFirestore }) => {
-   const firestore = getFirestore();
-   const user = firestore.auth().currentUser;
+export const goingToEvent = event => async (dispatch, getState) => {
+   dispatch(asyncActionStart());
+   const firestore = firebase.firestore();
+   const user = firebase.auth().currentUser;
    const { photoURL } = getState().firebase.profile;
    const attendee = {
       going: true,
@@ -123,19 +161,30 @@ export const goingToEvent = event => async (dispatch, getState, { getFirestore }
    };
 
    try {
-      await firestore.update(`events/${event.id}`, {
-         [`attendees.${user.uid}`]: attendee,
+      const eventDocRef = firestore.collection('events').doc(event.id);
+      const eventAttendeeDocRef = firestore
+         .collection('event_attendee')
+         .doc(`${event.id}_${user.uid}`);
+
+      await firestore.runTransaction(async (transaction) => {
+         await transaction.get(eventDocRef);
+         await transaction.update(eventDocRef, {
+            [`attendees.${user.uid}`]: attendee,
+         });
+         await transaction.set(eventAttendeeDocRef, {
+            eventId: event.id,
+            userUid: user.uid,
+            eventDate: event.date,
+            host: false,
+         });
       });
-      await firestore.set(`event_attendee/${event.id}_${user.uid}`, {
-         eventId: event.id,
-         userUid: user.uid,
-         eventDate: event.date,
-         host: false,
-      });
+
+      dispatch(asyncActionFinish());
       toastr.success('Success', 'You have signed up to the event');
    }
    catch (error) {
       console.log(error);
+      dispatch(asyncActionError());
       toastr.error('Oops', 'Problem signing up to event');
    }
 };

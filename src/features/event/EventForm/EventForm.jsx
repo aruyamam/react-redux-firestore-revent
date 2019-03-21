@@ -24,6 +24,7 @@ import PlaceInput from '../../../app/common/form/PlaceInput';
 
 const mapState = (
    {
+      async,
       firestore: {
          ordered: { events },
       },
@@ -38,6 +39,7 @@ const mapState = (
    return {
       initialValues: event,
       event,
+      loading: async.loading,
    };
 };
 
@@ -111,7 +113,7 @@ class EventForm extends Component {
          });
    };
 
-   onFormSubmit = (inputValues) => {
+   onFormSubmit = async (inputValues) => {
       const values = inputValues;
       const {
          event,
@@ -128,7 +130,7 @@ class EventForm extends Component {
             values.venueLatLng = event.venueLatLng;
          }
 
-         updateEvent(values);
+         await updateEvent(values);
          history.goBack();
       }
       else {
@@ -145,6 +147,7 @@ class EventForm extends Component {
          history,
          handleSubmit,
          invalid,
+         loading,
          pristine,
          submitting,
       } = this.props;
@@ -219,13 +222,14 @@ class EventForm extends Component {
                         placeholder="Date and Time of event"
                      />
                      <Button
+                        loading={loading}
                         type="submit"
                         positive
                         disabled={invalid || submitting || pristine}
                      >
                         Submit
                      </Button>
-                     <Button onClick={history.goBack} type="button">
+                     <Button onClick={history.goBack} disabled={loading} type="button">
                         Cancel
                      </Button>
                      <Button

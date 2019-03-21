@@ -2,10 +2,12 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import format from 'date-fns/format';
-import { Button, Header, Image, Item, Segment } from 'semantic-ui-react';
+import {
+   Button, Header, Image, Item, Segment,
+} from 'semantic-ui-react';
 
 const eventImageStyle = {
-   filter: 'brightness(30%)'
+   filter: 'brightness(30%)',
 };
 
 const eventImageTextStyle = {
@@ -14,7 +16,7 @@ const eventImageTextStyle = {
    left: '5%',
    width: '100%',
    height: 'auto',
-   color: 'white'
+   color: 'white',
 };
 
 const EventDetailedHeader = ({
@@ -22,7 +24,8 @@ const EventDetailedHeader = ({
    event,
    isHost,
    isGoing,
-   goingToEvent
+   goingToEvent,
+   loading,
 }) => {
    let eventDate;
    if (event.date) {
@@ -41,14 +44,12 @@ const EventDetailedHeader = ({
                <Item.Group>
                   <Item>
                      <Item.Content>
-                        <Header
-                           size="huge"
-                           content={event.title}
-                           style={{ color: 'white' }}
-                        />
+                        <Header size="huge" content={event.title} style={{ color: 'white' }} />
                         <p>{format(eventDate, 'dddd Do MMMM')}</p>
                         <p>
-                           Hosted by <strong>{event.hostedBy}</strong>
+                           Hosted by
+                           {' '}
+                           <strong>{event.hostedBy}</strong>
                         </p>
                      </Item.Content>
                   </Item>
@@ -59,11 +60,9 @@ const EventDetailedHeader = ({
             {!isHost && (
                <Fragment>
                   {isGoing ? (
-                     <Button onClick={() => cancelGoingToEvent(event)}>
-                        Cancel My Place
-                     </Button>
+                     <Button onClick={() => cancelGoingToEvent(event)}>Cancel My Place</Button>
                   ) : (
-                     <Button onClick={() => goingToEvent(event)} color="teal">
+                     <Button loading={loading} onClick={() => goingToEvent(event)} color="teal">
                         JOIN THIS EVENT
                      </Button>
                   )}
@@ -71,12 +70,7 @@ const EventDetailedHeader = ({
             )}
 
             {isHost && (
-               <Button
-                  as={Link}
-                  to={`/manage/${event.id}`}
-                  color="orange"
-                  floated="right"
-               >
+               <Button as={Link} to={`/manage/${event.id}`} color="orange" floated="right">
                   Manage Event
                </Button>
             )}
@@ -86,20 +80,22 @@ const EventDetailedHeader = ({
 };
 
 EventDetailedHeader.propTypes = {
+   cancelGoingToEvent: PropTypes.func.isRequired,
    event: PropTypes.shape({
       category: PropTypes.string,
       date: PropTypes.object,
       hostedBy: PropTypes.string,
       id: PropTypes.string,
-      title: PropTypes.string
+      title: PropTypes.string,
    }).isRequired,
    isHost: PropTypes.bool.isRequired,
    isGoing: PropTypes.bool,
-   goingToEvent: PropTypes.func.isRequired
+   goingToEvent: PropTypes.func.isRequired,
+   loading: PropTypes.bool.isRequired,
 };
 
 EventDetailedHeader.defaultProps = {
-   isGoing: false
+   isGoing: false,
 };
 
 export default EventDetailedHeader;
