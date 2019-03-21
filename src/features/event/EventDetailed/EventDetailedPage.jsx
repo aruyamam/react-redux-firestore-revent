@@ -14,6 +14,7 @@ import { addEventComment } from '../eventActions';
 
 const mapState = (
    {
+      async,
       firebase: { auth, data },
       firestore: {
          ordered: { events },
@@ -31,6 +32,7 @@ const mapState = (
       auth,
       event,
       eventChat: isEmpty(data.event_chat) ? [] : objectToArray(data.event_chat[params.id]),
+      loading: async.loading,
    };
 };
 
@@ -58,6 +60,7 @@ class EventDetailedPage extends Component {
          cancelGoingToEvent,
          event,
          goingToEvent,
+         loading,
       } = this.props;
       let { eventChat } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
@@ -76,6 +79,7 @@ class EventDetailedPage extends Component {
                   isGoing={isGoing}
                   cancelGoingToEvent={cancelGoingToEvent}
                   goingToEvent={goingToEvent}
+                  loading={loading}
                />
                <EventDetailedInfo event={event} />
                <EventDetailedChat
@@ -105,14 +109,13 @@ EventDetailedPage.propTypes = {
    event: PropTypes.shape({
       attendees: PropTypes.object,
    }).isRequired,
-   eventChat: PropTypes.arrayOf(
-      PropTypes.object,
-   ),
+   eventChat: PropTypes.arrayOf(PropTypes.object),
    firestore: PropTypes.shape({
       setListener: PropTypes.func.isRequired,
       unsetListener: PropTypes.func.isRequired,
    }).isRequired,
    goingToEvent: PropTypes.func.isRequired,
+   loading: PropTypes.bool.isRequired,
    match: PropTypes.shape({
       params: PropTypes.shape({
          id: PropTypes.string.isRequired,
