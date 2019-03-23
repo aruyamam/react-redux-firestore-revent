@@ -11,6 +11,7 @@ import EventDetailedSidebar from './EventDetailedSidebar';
 import { createDataTree, objectToArray } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 import { addEventComment } from '../eventActions';
+import { openModal } from '../../modals/modalActions';
 
 const mapState = (
    {
@@ -40,6 +41,7 @@ const actions = {
    addEventComment,
    cancelGoingToEvent,
    goingToEvent,
+   openModal,
 };
 
 class EventDetailedPage extends Component {
@@ -61,11 +63,13 @@ class EventDetailedPage extends Component {
          event,
          goingToEvent,
          loading,
+         openModal,
       } = this.props;
       let { eventChat } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
       const isHost = event.hostUid === auth.uid;
       const isGoing = attendees && attendees.some(a => a.id === auth.uid);
+      const authenticated = auth.isLoaded && !auth.isEmpty;
       if (eventChat.length > 0) {
          eventChat = createDataTree(eventChat);
       }
@@ -74,19 +78,23 @@ class EventDetailedPage extends Component {
          <Grid>
             <Grid.Column width={10}>
                <EventDetailedHeader
+                  authenticated={authenticated}
+                  cancelGoingToEvent={cancelGoingToEvent}
                   event={event}
                   isHost={isHost}
                   isGoing={isGoing}
-                  cancelGoingToEvent={cancelGoingToEvent}
                   goingToEvent={goingToEvent}
                   loading={loading}
+                  openModal={openModal}
                />
                <EventDetailedInfo event={event} />
-               <EventDetailedChat
-                  addEventComment={addEventComment}
-                  eventChat={eventChat}
-                  eventId={event.id}
-               />
+               {authenticated && (
+                  <EventDetailedChat
+                     addEventComment={addEventComment}
+                     eventChat={eventChat}
+                     eventId={event.id}
+                  />
+               )}
             </Grid.Column>
             <Grid.Column width={6}>
                <EventDetailedSidebar attendees={attendees} />

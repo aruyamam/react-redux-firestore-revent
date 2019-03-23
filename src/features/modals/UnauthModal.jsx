@@ -10,10 +10,17 @@ const actions = {
    openModal,
 };
 
-const UnauthModal = ({ closeModal, history, openModal }) => {
+const UnauthModal = ({
+   closeModal, history, location, openModal,
+}) => {
    const handleCloseModal = () => {
-      history.goBack();
-      closeModal();
+      if (location.pathname.includes('/event')) {
+         closeModal();
+      }
+      else {
+         history.goBack();
+         closeModal();
+      }
    };
 
    return (
@@ -43,6 +50,12 @@ const UnauthModal = ({ closeModal, history, openModal }) => {
 
 UnauthModal.propTypes = {
    closeModal: PropTypes.func.isRequired,
+   history: PropTypes.shape({
+      goBack: PropTypes.func.isRequired,
+   }).isRequired,
+   location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+   }).isRequired,
    openModal: PropTypes.func.isRequired,
 };
 
