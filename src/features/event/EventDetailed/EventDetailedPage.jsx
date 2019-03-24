@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty, withFirestore } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Grid } from 'semantic-ui-react';
+import { toastr } from 'react-redux-toastr';
 import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
@@ -46,7 +47,14 @@ const actions = {
 
 class EventDetailedPage extends Component {
    async componentDidMount() {
-      const { firestore, match } = this.props;
+      const { firestore, history, match } = this.props;
+      const event = await firestore.get(`events/${match.params.id}`);
+
+      if (!event.exists) {
+         toastr.error('Not found', 'This is not the event your are looking for');
+         history.push('/error');
+      }
+
       await firestore.setListener(`events/${match.params.id}`);
    }
 
@@ -123,12 +131,16 @@ EventDetailedPage.propTypes = {
       unsetListener: PropTypes.func.isRequired,
    }).isRequired,
    goingToEvent: PropTypes.func.isRequired,
+   history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+   }).isRequired,
    loading: PropTypes.bool.isRequired,
    match: PropTypes.shape({
       params: PropTypes.shape({
          id: PropTypes.string.isRequired,
       }).isRequired,
    }).isRequired,
+   openModal: PropTypes.func.isRequired,
 };
 
 export default compose(
