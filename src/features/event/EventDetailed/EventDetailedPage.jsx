@@ -9,6 +9,7 @@ import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { createDataTree, objectToArray } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 import { addEventComment } from '../eventActions';
@@ -16,10 +17,11 @@ import { openModal } from '../../modals/modalActions';
 
 const mapState = (
    {
-      async,
+      async: { loading },
       firebase: { auth, data },
       firestore: {
          ordered: { events },
+         status: { requesting },
       },
    },
    { match: { params } },
@@ -34,7 +36,8 @@ const mapState = (
       auth,
       event,
       eventChat: isEmpty(data.event_chat) ? [] : objectToArray(data.event_chat[params.id]),
-      loading: async.loading,
+      loading,
+      requesting,
    };
 };
 
@@ -46,6 +49,10 @@ const actions = {
 };
 
 class EventDetailedPage extends Component {
+   state = {
+      initialLoading: true,
+   };
+
    async componentDidMount() {
       const { firestore, history, match } = this.props;
       const event = await firestore.get(`events/${match.params.id}`);
@@ -56,6 +63,7 @@ class EventDetailedPage extends Component {
       }
 
       await firestore.setListener(`events/${match.params.id}`);
+      this.setState({ initialLoading: false });
    }
 
    async componentWillUnmount() {
@@ -71,15 +79,23 @@ class EventDetailedPage extends Component {
          event,
          goingToEvent,
          loading,
+         match,
          openModal,
+         requesting,
       } = this.props;
+      const { initialLoading } = this.state;
       let { eventChat } = this.props;
       const attendees = event && event.attendees && objectToArray(event.attendees);
       const isHost = event.hostUid === auth.uid;
       const isGoing = attendees && attendees.some(a => a.id === auth.uid);
       const authenticated = auth.isLoaded && !auth.isEmpty;
+      const loadingEvent = requesting[`events/${match.params.id}`];
       if (eventChat.length > 0) {
          eventChat = createDataTree(eventChat);
+      }
+
+      if (loadingEvent || initialLoading) {
+         return <LoadingComponent inverted />;
       }
 
       return (
@@ -116,6 +132,25 @@ EventDetailedPage.defaultProps = {
    eventChat: [],
 };
 
+const createCustomPropType = (isRequired) => {
+   return (props, propName, componentName) => {
+      const prop = props[propName];
+      if (props == null) {
+         if (isRequired) {
+            return new Error(
+               `The prop ${propName} is marked as required in ${componentName}, but its value is undefined.`,
+            );
+         }
+      }
+      else if (typeof prop[`events/${props.match.params.id}`] !== 'boolean') {
+         return new Error(`Invalid prop ${propName} supplied to ${componentName} Validation failed.`);
+      }
+   };
+};
+
+const requestingPropType = createCustomPropType(false);
+requestingPropType.isRequired = createCustomPropType(true);
+
 EventDetailedPage.propTypes = {
    addEventComment: PropTypes.func.isRequired,
    auth: PropTypes.shape({
@@ -141,6 +176,7 @@ EventDetailedPage.propTypes = {
       }).isRequired,
    }).isRequired,
    openModal: PropTypes.func.isRequired,
+   requesting: requestingPropType.isRequired,
 };
 
 export default compose(
