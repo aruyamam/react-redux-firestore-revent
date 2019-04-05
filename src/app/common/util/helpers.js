@@ -44,3 +44,22 @@ export const createDataTree = (dataset) => {
 
    return dataTree;
 };
+
+const createCustomPropType = isRequired => (props, propName, componentName) => {
+   const prop = props[propName];
+   if (prop == null) {
+      if (isRequired) {
+         return new Error(
+            `The prop ${propName} is marked as required in ${componentName}, but its value is undefined.`,
+         );
+      }
+   }
+   else if (typeof prop[`events/${props.match.params.id}`] !== 'boolean') {
+      return new Error(
+         `Invalid prop ${propName} supplied to ${componentName} Validation failed.`,
+      );
+   }
+};
+
+export const requestingPropType = createCustomPropType(false);
+requestingPropType.isRequired = createCustomPropType(true);

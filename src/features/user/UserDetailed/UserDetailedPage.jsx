@@ -13,8 +13,16 @@ import UserDetailedEvents from './UserDetailedEvents';
 import userDetailedQuery from '../userQueries';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { followUser, getUserEvents, unfollowUser } from '../userActions';
+import { requestingPropType } from '../../../app/common/util/helpers'
 
-const mapState = ({ auth, async, events, firestore, firebase }, { match: { params } }) => {
+const mapState = (
+   {
+      auth, async, events, firestore, firebase,
+   },
+   {
+      match: { params },
+   },
+) => {
    let userUid = null;
    let profile = {};
 
@@ -111,6 +119,7 @@ class UserDetailedPage extends Component {
 UserDetailedPage.defaultProps = {
    following: [],
    photos: [],
+   userUid: null,
 };
 
 UserDetailedPage.propTypes = {
@@ -134,9 +143,16 @@ UserDetailedPage.propTypes = {
       }).isRequired,
    }).isRequired,
    photos: PropTypes.arrayOf(PropTypes.object),
-   profile: PropTypes.object.isRequired,
-   requesting: PropTypes.object.isRequired,
-   userUid: PropTypes.string.isRequired,
+   profile: PropTypes.shape({
+      createdAt: PropTypes.object,
+      displayName: PropTypes.string,
+      gender: PropTypes.string,
+      isEmpty: PropTypes.bool,
+      isLoaded: PropTypes.bool,
+      photoURL: PropTypes.string,
+   }).isRequired,
+   requesting: requestingPropType.isRequired,
+   userUid: PropTypes.string,
    unfollowUser: PropTypes.func.isRequired,
 };
 

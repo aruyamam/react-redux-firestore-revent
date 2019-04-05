@@ -117,7 +117,7 @@ class EventDetailedChat extends Component {
                   addEventComment={addEventComment}
                   eventId={eventId}
                   form="newComment"
-                  parentId="0"
+                  parentId={0}
                />
             </Segment>
          </div>

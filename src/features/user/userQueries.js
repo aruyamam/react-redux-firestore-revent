@@ -1,5 +1,4 @@
 const userDetailedQuery = ({ auth, userUid, match }) => {
-   // console.log(auth, userUid);
    if (userUid !== null) {
       return [
          {

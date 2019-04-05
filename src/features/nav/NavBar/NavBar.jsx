@@ -16,11 +16,13 @@ const mapState = ({ firebase: { auth, profile } }) => ({ auth, profile });
 
 class NavBar extends Component {
    handleSignIn = () => {
-      this.props.openModal('LoginModal');
+      const { openModal } = this.props;
+      openModal('LoginModal');
    };
 
    handleRegister = () => {
-      this.props.openModal('RegisterModal');
+      const { openModal } = this.props;
+      openModal('RegisterModal');
    };
 
    handleSignOut = () => {
@@ -68,15 +70,20 @@ class NavBar extends Component {
 }
 
 NavBar.propTypes = {
-   history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
+   auth: PropTypes.shape({
+      isLoaded: PropTypes.bool.isRequired,
+      isEmpty: PropTypes.bool.isRequired,
    }).isRequired,
    firebase: PropTypes.shape({
       logout: PropTypes.func.isRequired,
    }).isRequired,
-   auth: PropTypes.shape({
-      isLoaded: PropTypes.bool.isRequired,
-      isEmpty: PropTypes.bool.isRequired,
+   history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+   }).isRequired,
+   openModal: PropTypes.func.isRequired,
+   profile: PropTypes.shape({
+      displayName: PropTypes.string,
+      photoURL: PropTypes.string,
    }).isRequired,
 };
 

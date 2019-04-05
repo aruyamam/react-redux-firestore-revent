@@ -80,7 +80,8 @@ class PhotosPage extends Component {
 
    handlePhotoDelete = photo => async () => {
       try {
-         this.props.deletePhoto(photo);
+         const { deletePhoto } = this.props;
+         deletePhoto(photo);
       }
       catch (error) {
          toastr.error('Oops', error.message);
@@ -89,7 +90,8 @@ class PhotosPage extends Component {
 
    handleSetMainPhoto = photo => async () => {
       try {
-         await this.props.setMainPhoto(photo);
+         const { setMainPhoto } = this.props;
+         await setMainPhoto(photo);
       }
       catch (error) {
          toastr.error('Oops', error.message);

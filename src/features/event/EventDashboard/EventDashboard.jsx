@@ -90,7 +90,7 @@ class EventDashboard extends Component {
                   />
                </div>
             </Grid.Column>
-            <Grid.Column width={6}>
+            <Grid.Column width={6} style={{ zIndex: 0 }}>
                <EventActivity activities={activities} contextRef={contextRef} />
             </Grid.Column>
             <Grid.Column width={10}>

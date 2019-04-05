@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TestModal from './TestModal';
 import LoginModal from './LoginModal';
@@ -27,6 +28,16 @@ const ModalManager = ({ currentModal }) => {
    }
 
    return <span>{renderedModal}</span>;
+};
+
+ModalManager.defaultProps = {
+   currentModal: null,
+};
+
+ModalManager.propTypes = {
+   currentModal: PropTypes.shape({
+      modalType: PropTypes.string.isRequired,
+   }),
 };
 
 export default connect(mapState)(ModalManager);

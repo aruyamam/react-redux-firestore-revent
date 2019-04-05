@@ -25,7 +25,7 @@ export const registerUser = user => async (dispatch, getState, { getFirebase, ge
       const createdUser = await firebase
          .auth()
          .createUserWithEmailAndPassword(user.email, user.password);
-      console.log(createdUser);
+      // console.log(createdUser);
 
       // update the auth profile
       await createdUser.updateProfile({
@@ -63,7 +63,7 @@ export const socialLogin = selectedProvider => async (
          provider: selectedProvider,
          type: 'popup',
       });
-      console.log(user);
+      // console.log(user);
       if (user.additionalUserInfo.isNewUser) {
          await firestore.set(`users/${user.user.uid}`, {
             displayName: user.profile.displayName,

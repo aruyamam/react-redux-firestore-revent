@@ -33,7 +33,6 @@ class PlaceInput extends Component {
       const { scriptLoaded } = this.state;
       const {
          input,
-         width,
          onSelect,
          placeholder,
          options,
@@ -41,7 +40,7 @@ class PlaceInput extends Component {
       } = this.props;
 
       return (
-         <Form.Field error={touched && !!error} width={width}>
+         <Form.Field error={touched && !!error}>
             <Script
                url={`https://maps.googleapis.com/maps/api/js?key=${
                   process.env.REACT_APP_GOOGLE_MAP_API
@@ -98,12 +97,23 @@ class PlaceInput extends Component {
    }
 }
 
+PlaceInput.defaultProps = {
+   onSelect: null,
+};
+
 PlaceInput.propTypes = {
    input: PropTypes.shape({
       onBlur: PropTypes.func.isRequired,
    }).isRequired,
    onSelect: PropTypes.func,
-   options: PropTypes.object.isRequired,
+   options: PropTypes.shape({
+      location: PropTypes.shape({
+         lat: PropTypes.func,
+         lng: PropTypes.func,
+      }),
+      radius: PropTypes.number,
+      type: PropTypes.arrayOf(PropTypes.string),
+   }).isRequired,
    meta: PropTypes.shape({
       error: PropTypes.string,
       touched: PropTypes.bool.isRequired,

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
    Button, Divider, Form, Icon, Label, Header, Segment,
 } from 'semantic-ui-react';
@@ -85,5 +86,18 @@ const AccountPage = ({
       )}
    </Segment>
 );
+
+AccountPage.defaultProps = {
+   error: '',
+};
+
+AccountPage.propTypes = {
+   error: PropTypes.string,
+   handleSubmit: PropTypes.func.isRequired,
+   invalid: PropTypes.bool.isRequired,
+   providerId: PropTypes.string.isRequired,
+   submitting: PropTypes.bool.isRequired,
+   updatePassword: PropTypes.func.isRequired,
+};
 
 export default reduxForm({ form: 'account', validate })(AccountPage);

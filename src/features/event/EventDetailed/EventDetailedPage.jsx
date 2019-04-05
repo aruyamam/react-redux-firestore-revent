@@ -10,7 +10,7 @@ import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
-import { createDataTree, objectToArray } from '../../../app/common/util/helpers';
+import { createDataTree, objectToArray, requestingPropType } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 import { addEventComment } from '../eventActions';
 import { openModal } from '../../modals/modalActions';
@@ -30,6 +30,10 @@ const mapState = (
 
    if (events && events[0]) {
       [event] = events;
+   }
+
+   if (requesting[`events/${params.id}`] === undefined) {
+      requesting[`events/${params.id}`] = true;
    }
 
    return {
@@ -85,7 +89,7 @@ class EventDetailedPage extends Component {
       } = this.props;
       const { initialLoading } = this.state;
       let { eventChat } = this.props;
-      const attendees = event && event.attendees && objectToArray(event.attendees);
+      const attendees = event && event.attendees && objectToArray(event.attendees).sort((a, b) => a.joinDate - b.joinDate);
       const isHost = event.hostUid === auth.uid;
       const isGoing = attendees && attendees.some(a => a.id === auth.uid);
       const authenticated = auth.isLoaded && !auth.isEmpty;
@@ -132,25 +136,6 @@ EventDetailedPage.defaultProps = {
    eventChat: [],
 };
 
-const createCustomPropType = (isRequired) => {
-   return (props, propName, componentName) => {
-      const prop = props[propName];
-      if (props == null) {
-         if (isRequired) {
-            return new Error(
-               `The prop ${propName} is marked as required in ${componentName}, but its value is undefined.`,
-            );
-         }
-      }
-      else if (typeof prop[`events/${props.match.params.id}`] !== 'boolean') {
-         return new Error(`Invalid prop ${propName} supplied to ${componentName} Validation failed.`);
-      }
-   };
-};
-
-const requestingPropType = createCustomPropType(false);
-requestingPropType.isRequired = createCustomPropType(true);
-
 EventDetailedPage.propTypes = {
    addEventComment: PropTypes.func.isRequired,
    auth: PropTypes.shape({
@@ -185,5 +170,5 @@ export default compose(
       mapState,
       actions,
    ),
-   firebaseConnect(props => [`event_chat/${props.match.params.id}`]),
+   firebaseConnect(props => props.auth.isLoaded && !props.auth.isEmpty && [`event_chat/${props.match.params.id}`]),
 )(EventDetailedPage);

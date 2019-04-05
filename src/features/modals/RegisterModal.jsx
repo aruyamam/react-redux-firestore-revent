@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Modal } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
@@ -25,6 +26,10 @@ class RegisterModal extends Component {
       );
    }
 }
+
+RegisterModal.propTypes = {
+   closeModal: PropTypes.func.isRequired,
+};
 
 export default connect(
    null,

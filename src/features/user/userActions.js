@@ -136,7 +136,6 @@ export const setMainPhoto = photo => async (dispatch, getState) => {
          }
       }
 
-      console.log(batch);
       await batch.commit();
       dispatch(asyncActionFinish());
    }
@@ -151,12 +150,12 @@ export const goingToEvent = event => async (dispatch, getState) => {
    dispatch(asyncActionStart());
    const firestore = firebase.firestore();
    const user = firebase.auth().currentUser;
-   const { photoURL } = getState().firebase.profile;
+   const { profile } = getState().firebase;
    const attendee = {
       going: true,
       joinDate: Date.now(),
-      photoURL: photoURL || '/assets/user.png',
-      displayName: user.displayName,
+      photoURL: profile.photoURL || '/assets/user.png',
+      displayName: profile.displayName,
       host: false,
    };
 

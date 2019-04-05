@@ -6,7 +6,7 @@ const UserIsAuthenticated = connectedReduxRedirect({
    allowRedirectBack: true,
    redirectPath: '/events',
    authenticatedSelector: ({ firebase: { auth } }) => auth.isLoaded && !auth.isEmpty,
-   redirectAction: newLoc => dispatch => dispatch(openModal('UnauthModal')),
+   redirectAction: () => dispatch => dispatch(openModal('UnauthModal')),
 });
 
 export default UserIsAuthenticated;
