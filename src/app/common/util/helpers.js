@@ -55,9 +55,7 @@ const createCustomPropType = isRequired => (props, propName, componentName) => {
       }
    }
    else if (typeof prop[`events/${props.match.params.id}`] !== 'boolean') {
-      return new Error(
-         `Invalid prop ${propName} supplied to ${componentName} Validation failed.`,
-      );
+      return new Error(`Invalid prop ${propName} supplied to ${componentName} Validation failed.`);
    }
 };
 

@@ -13,16 +13,11 @@ import UserDetailedEvents from './UserDetailedEvents';
 import userDetailedQuery from '../userQueries';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { followUser, getUserEvents, unfollowUser } from '../userActions';
-import { requestingPropType } from '../../../app/common/util/helpers'
+import { requestingPropType } from '../../../app/common/util/helpers';
 
-const mapState = (
-   {
-      auth, async, events, firestore, firebase,
-   },
-   {
-      match: { params },
-   },
-) => {
+const mapState = ({
+   auth, async, events, firestore, firebase,
+}, { match: { params } }) => {
    let userUid = null;
    let profile = {};
 
@@ -70,7 +65,7 @@ class UserDetailedPage extends Component {
    changeTab = (e, data) => {
       const { getUserEvents, userUid } = this.props;
       getUserEvents(userUid, data.activeIndex);
-   }
+   };
 
    render() {
       const {
@@ -94,24 +89,26 @@ class UserDetailedPage extends Component {
          return <LoadingComponent inverted />;
       }
 
-      return !isEmpty(profile) && (
-         <Grid>
-            <UserDetailedHeader profile={profile} />
-            <UserDetailedDescription profile={profile} />
-            <UserDetailedSidebar
-               followUser={followUser}
-               isFollowing={isFollowing}
-               isCurrentUser={isCurrentUser}
-               profile={profile}
-               unfollowUser={unfollowUser}
-            />
-            {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
-            <UserDetailedEvents
-               changeTab={this.changeTab}
-               events={events}
-               eventsLoading={eventsLoading}
-            />
-         </Grid>
+      return (
+         !isEmpty(profile) && (
+            <Grid>
+               <UserDetailedHeader profile={profile} />
+               <UserDetailedDescription profile={profile} />
+               <UserDetailedSidebar
+                  followUser={followUser}
+                  isFollowing={isFollowing}
+                  isCurrentUser={isCurrentUser}
+                  profile={profile}
+                  unfollowUser={unfollowUser}
+               />
+               {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
+               <UserDetailedEvents
+                  changeTab={this.changeTab}
+                  events={events}
+                  eventsLoading={eventsLoading}
+               />
+            </Grid>
+         )
       );
    }
 }
@@ -157,6 +154,9 @@ UserDetailedPage.propTypes = {
 };
 
 export default compose(
-   connect(mapState, actions),
+   connect(
+      mapState,
+      actions,
+   ),
    firestoreConnect((auth, userUid, match) => userDetailedQuery(auth, userUid, match)),
 )(UserDetailedPage);
