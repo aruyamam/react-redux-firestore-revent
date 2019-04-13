@@ -37,7 +37,9 @@ const mapState = ({
       auth: firebase.auth,
       following: firestore.ordered.following,
       photos: firestore.ordered.photos,
-      requesting: firestore.status.requesting,
+      requesting: isEmpty(firestore.status.requesting)
+         ? { [`users/${params.id}`]: true }
+         : firestore.status.requesting,
    };
 };
 
@@ -50,7 +52,7 @@ const actions = {
 class UserDetailedPage extends Component {
    async componentDidMount() {
       const {
-         firestore, history, getUserEvents, match, userUid,
+         firestore, history, getUserEvents, match,
       } = this.props;
       const user = await firestore.get(`users/${match.params.id}`);
 
@@ -59,12 +61,12 @@ class UserDetailedPage extends Component {
          history.push('/error');
       }
 
-      await getUserEvents(userUid);
+      await getUserEvents(match.params.id);
    }
 
    changeTab = (e, data) => {
-      const { getUserEvents, userUid } = this.props;
-      getUserEvents(userUid, data.activeIndex);
+      const { getUserEvents, match } = this.props;
+      getUserEvents(match.params.id, data.activeIndex);
    };
 
    render() {
@@ -116,7 +118,7 @@ class UserDetailedPage extends Component {
 UserDetailedPage.defaultProps = {
    following: [],
    photos: [],
-   userUid: null,
+   userUid: '',
 };
 
 UserDetailedPage.propTypes = {
@@ -148,7 +150,7 @@ UserDetailedPage.propTypes = {
       isLoaded: PropTypes.bool,
       photoURL: PropTypes.string,
    }).isRequired,
-   requesting: requestingPropType.isRequired,
+   requesting: requestingPropType,
    userUid: PropTypes.string,
    unfollowUser: PropTypes.func.isRequired,
 };

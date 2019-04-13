@@ -25,6 +25,11 @@ const userDetailedQuery = ({ auth, userUid, match }) => {
       {
          collection: 'users',
          doc: auth.uid,
+         storeAs: 'profile',
+      },
+      {
+         collection: 'users',
+         doc: auth.uid,
          subcollections: [{ collection: 'photos' }],
          storeAs: 'photos',
       },
