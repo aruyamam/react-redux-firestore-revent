@@ -10,6 +10,7 @@
       ],
       "brace-style": ["error", "stroustrup"],
       "react/jsx-indent": ["error", 3],
-      "react/jsx-indent-props": ["error", 3]
+      "react/jsx-indent-props": ["error", 3],
+      "no-shadow": "off"
    }
 }

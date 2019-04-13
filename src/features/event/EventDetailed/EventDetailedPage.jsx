@@ -4,21 +4,24 @@ import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty, withFirestore } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Grid } from 'semantic-ui-react';
+import { toastr } from 'react-redux-toastr';
 import EventDetailedHeader from './EventDetailedHeader';
 import EventDetailedInfo from './EventDetailedInfo';
 import EventDetailedChat from './EventDetailedChat';
 import EventDetailedSidebar from './EventDetailedSidebar';
-import { createDataTree, objectToArray } from '../../../app/common/util/helpers';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { createDataTree, objectToArray, requestingPropType } from '../../../app/common/util/helpers';
 import { goingToEvent, cancelGoingToEvent } from '../../user/userActions';
 import { addEventComment } from '../eventActions';
 import { openModal } from '../../modals/modalActions';
 
 const mapState = (
    {
-      async,
+      async: { loading },
       firebase: { auth, data },
       firestore: {
          ordered: { events },
+         status: { requesting },
       },
    },
    { match: { params } },
@@ -29,11 +32,16 @@ const mapState = (
       [event] = events;
    }
 
+   if (requesting[`events/${params.id}`] === undefined) {
+      requesting[`events/${params.id}`] = true;
+   }
+
    return {
       auth,
       event,
       eventChat: isEmpty(data.event_chat) ? [] : objectToArray(data.event_chat[params.id]),
-      loading: async.loading,
+      loading,
+      requesting,
    };
 };
 
@@ -45,9 +53,21 @@ const actions = {
 };
 
 class EventDetailedPage extends Component {
+   state = {
+      initialLoading: true,
+   };
+
    async componentDidMount() {
-      const { firestore, match } = this.props;
+      const { firestore, history, match } = this.props;
+      const event = await firestore.get(`events/${match.params.id}`);
+
+      if (!event.exists) {
+         toastr.error('Not found', 'This is not the event your are looking for');
+         history.push('/error');
+      }
+
       await firestore.setListener(`events/${match.params.id}`);
+      this.setState({ initialLoading: false });
    }
 
    async componentWillUnmount() {
@@ -63,15 +83,23 @@ class EventDetailedPage extends Component {
          event,
          goingToEvent,
          loading,
+         match,
          openModal,
+         requesting,
       } = this.props;
+      const { initialLoading } = this.state;
       let { eventChat } = this.props;
-      const attendees = event && event.attendees && objectToArray(event.attendees);
+      const attendees = event && event.attendees && objectToArray(event.attendees).sort((a, b) => a.joinDate - b.joinDate);
       const isHost = event.hostUid === auth.uid;
       const isGoing = attendees && attendees.some(a => a.id === auth.uid);
       const authenticated = auth.isLoaded && !auth.isEmpty;
+      const loadingEvent = requesting[`events/${match.params.id}`];
       if (eventChat.length > 0) {
          eventChat = createDataTree(eventChat);
+      }
+
+      if (loadingEvent || initialLoading) {
+         return <LoadingComponent inverted />;
       }
 
       return (
@@ -123,12 +151,17 @@ EventDetailedPage.propTypes = {
       unsetListener: PropTypes.func.isRequired,
    }).isRequired,
    goingToEvent: PropTypes.func.isRequired,
+   history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+   }).isRequired,
    loading: PropTypes.bool.isRequired,
    match: PropTypes.shape({
       params: PropTypes.shape({
          id: PropTypes.string.isRequired,
       }).isRequired,
    }).isRequired,
+   openModal: PropTypes.func.isRequired,
+   requesting: requestingPropType.isRequired,
 };
 
 export default compose(
@@ -137,5 +170,5 @@ export default compose(
       mapState,
       actions,
    ),
-   firebaseConnect(props => [`event_chat/${props.match.params.id}`]),
+   firebaseConnect(props => props.auth.isLoaded && !props.auth.isEmpty && [`event_chat/${props.match.params.id}`]),
 )(EventDetailedPage);

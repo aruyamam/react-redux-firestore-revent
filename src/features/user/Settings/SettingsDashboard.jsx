@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid } from 'semantic-ui-react';
 import { Switch, Redirect, Route } from 'react-router-dom';
@@ -49,6 +50,20 @@ const SettingsDashboard = ({
       </Grid.Column>
    </Grid>
 );
+
+SettingsDashboard.propTypes = {
+   providerId: PropTypes.string.isRequired,
+   updatePassword: PropTypes.func.isRequired,
+   updateProfile: PropTypes.func.isRequired,
+   user: PropTypes.shape({
+      createdAt: PropTypes.object,
+      displayName: PropTypes.string,
+      gender: PropTypes.string,
+      isEmpty: PropTypes.bool,
+      isLoaded: PropTypes.bool,
+      photoURL: PropTypes.string,
+   }).isRequired,
+};
 
 export default connect(
    mapState,

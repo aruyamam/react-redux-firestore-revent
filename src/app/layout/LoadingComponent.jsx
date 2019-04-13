@@ -8,8 +8,12 @@ const LoadingComponent = ({ inverted }) => (
    </Dimmer>
 );
 
+LoadingComponent.defaultProps = {
+   inverted: true,
+};
+
 LoadingComponent.propTypes = {
-   inverted: PropTypes.bool.isRequired,
+   inverted: PropTypes.bool,
 };
 
 export default LoadingComponent;

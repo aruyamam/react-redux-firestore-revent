@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { Form, Label } from 'semantic-ui-react';
 
 const TextInput = ({
-   input, width, type, placeholder, meta: { touched, error },
+   input, type, placeholder, meta: { touched, error },
 }) => (
-   <Form.Field error={touched && !!error} width={width}>
+   <Form.Field error={touched && !!error}>
       <input {...input} placeholder={placeholder} type={type} />
       {touched && error && (
          <Label basic color="red">

@@ -92,24 +92,28 @@ class EventForm extends Component {
    handleScriptLoaded = () => this.setState({ scriptLoaded: true });
 
    handleCitySelect = (selectedCity) => {
+      const { change } = this.props;
+
       geocodeByAddress(selectedCity)
          .then(results => getLatLng(results[0]))
          .then((latlng) => {
             this.setState({ cityLatLng: latlng });
          })
          .then(() => {
-            this.props.change('city', selectedCity);
+            change('city', selectedCity);
          });
    };
 
    handleVenueSelect = (selectedVenue) => {
+      const { change } = this.props;
+
       geocodeByAddress(selectedVenue)
          .then(results => getLatLng(results[0]))
          .then((latlng) => {
             this.setState({ venueLatLng: latlng });
          })
          .then(() => {
-            this.props.change('venue', selectedVenue);
+            change('venue', selectedVenue);
          });
    };
 
@@ -122,8 +126,9 @@ class EventForm extends Component {
          createEvent,
          history,
       } = this.props;
+      const { venueLatLng } = this.state;
 
-      values.venueLatLng = this.state.venueLatLng;
+      values.venueLatLng = venueLatLng;
 
       if (initialValues.id) {
          if (Object.keys(values.venueLatLng).length === 0) {
@@ -134,7 +139,6 @@ class EventForm extends Component {
          history.goBack();
       }
       else {
-         console.log(values);
          createEvent(values);
          history.push('/events');
       }
@@ -232,15 +236,17 @@ class EventForm extends Component {
                      <Button onClick={history.goBack} disabled={loading} type="button">
                         Cancel
                      </Button>
-                     <Button
-                        onClick={() => cancelToggle(!event.cancelled, event.id)}
-                        color={event.cancelled ? 'green' : 'red'}
-                        content={
-                           event.cancelled ? 'Reactivate Event' : 'Cancel event'
-                        }
-                        floated="right"
-                        type="button"
-                     />
+                     {event.id && (
+                        <Button
+                           onClick={() => cancelToggle(!event.cancelled, event.id)}
+                           color={event.cancelled ? 'green' : 'red'}
+                           content={
+                              event.cancelled ? 'Reactivate Event' : 'Cancel event'
+                           }
+                           floated="right"
+                           type="button"
+                        />
+                     )}
                   </Form>
                </Segment>
             </Grid.Column>
@@ -251,16 +257,9 @@ class EventForm extends Component {
 
 EventForm.propTypes = {
    cancelToggle: PropTypes.func.isRequired,
+   change: PropTypes.func.isRequired,
    createEvent: PropTypes.func.isRequired,
    updateEvent: PropTypes.func.isRequired,
-   firestore: PropTypes.shape({
-      setListener: PropTypes.func.isRequired,
-      unsetListener: PropTypes.func.isRequired,
-   }).isRequired,
-   history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
-      goBack: PropTypes.func.isRequired,
-   }).isRequired,
    event: PropTypes.shape({
       cancelled: PropTypes.bool,
       venueLatLng: PropTypes.shape({
@@ -268,7 +267,15 @@ EventForm.propTypes = {
          lng: PropTypes.number,
       }),
    }).isRequired,
+   firestore: PropTypes.shape({
+      setListener: PropTypes.func.isRequired,
+      unsetListener: PropTypes.func.isRequired,
+   }).isRequired,
    handleSubmit: PropTypes.func.isRequired,
+   history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+      goBack: PropTypes.func.isRequired,
+   }).isRequired,
    initialValues: PropTypes.shape({
       attendees: PropTypes.object,
       category: PropTypes.string,
@@ -282,6 +289,7 @@ EventForm.propTypes = {
       veneue: PropTypes.string,
    }).isRequired,
    invalid: PropTypes.bool.isRequired,
+   loading: PropTypes.bool.isRequired,
    match: PropTypes.shape({
       params: PropTypes.shape({
          id: PropTypes.string,

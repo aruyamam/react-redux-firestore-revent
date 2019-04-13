@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import format from 'date-fns/format';
 import {
-   Button, Header, Image, Item, Segment,
+   Button, Header, Image, Item, Label, Segment,
 } from 'semantic-ui-react';
 
 const eventImageStyle = {
@@ -61,17 +61,17 @@ const EventDetailedHeader = ({
          <Segment attached="bottom" clearing>
             {!isHost && (
                <Fragment>
-                  {isGoing && (
+                  {isGoing && !event.cancelled && (
                      <Button onClick={() => cancelGoingToEvent(event)}>Cancel My Place</Button>
                   )}
 
-                  {!isGoing && authenticated && (
+                  {!isGoing && authenticated && !event.cancelled && (
                      <Button loading={loading} onClick={() => goingToEvent(event)} color="teal">
                         JOIN THIS EVENT
                      </Button>
                   )}
 
-                  {!authenticated && (
+                  {!authenticated && !event.cancelled && (
                      <Button
                         loading={loading}
                         onClick={() => openModal('UnauthModal')}
@@ -79,6 +79,9 @@ const EventDetailedHeader = ({
                      >
                         JOIN THIS EVENT
                      </Button>
+                  )}
+                  {event.cancelled && !isHost && (
+                     <Label content="This event has been cancelled" color="red" size="large" />
                   )}
                </Fragment>
             )}

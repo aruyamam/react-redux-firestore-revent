@@ -35,7 +35,10 @@ export const updateEvent = event => async (dispatch, getState) => {
 
    try {
       const eventDocRef = firestore.collection('events').doc(event.id);
-      const dateEqual = compareAsc(getState().firestore.ordered.events[0].date.toDate(), event.date);
+      const dateEqual = compareAsc(
+         getState().firestore.ordered.events[0].date.toDate(),
+         event.date,
+      );
       if (dateEqual !== 0) {
          const batch = firestore.batch();
          await batch.update(eventDocRef, event);
@@ -91,7 +94,7 @@ export const cancelToggle = (cancelled, eventId) => async (
    }
 };
 
-export const getEventsForDashboard = lastEvent => async (dispatch, getState) => {
+export const getEventsForDashboard = lastEvent => async (dispatch) => {
    const today = new Date(Date.now());
    const firestore = firebase.firestore();
    const eventsRef = firestore.collection('events');
@@ -105,6 +108,7 @@ export const getEventsForDashboard = lastEvent => async (dispatch, getState) => 
             .get());
       let query;
 
+      /* eslint no-unused-expressions: "off"  */
       lastEvent
          ? (query = eventsRef
             .where('date', '>=', today)

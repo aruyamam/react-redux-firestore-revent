@@ -32,9 +32,11 @@ const EventDetailedSidebar = ({ attendees }) => (
             {attendees
                && attendees.map(attendee => (
                   <Item key={attendee.id} style={{ position: 'relative' }}>
-                     <Label ribbon="right" color="orange" style={{ position: 'absolute' }}>
-                        Host
-                     </Label>
+                     {attendee.host && (
+                        <Label ribbon="right" color="orange" style={{ position: 'absolute' }}>
+                           Host
+                        </Label>
+                     )}
                      <Item.Content verticalAlign="middle" style={itemContentStyle}>
                         <Item.Header as="h3">
                            <Link to={`/profile/${attendee.id}`}>{attendee.displayName}</Link>

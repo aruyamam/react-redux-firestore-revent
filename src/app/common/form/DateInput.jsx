@@ -9,9 +9,9 @@ const DateInput = ({
    input: {
       value, onChange, onBlur, ...restInput
    },
-   width,
    placeholder,
    meta: { touched, error },
+   width,
    ...rest
 }) => {
    if (value && typeof value === 'object') {
@@ -37,17 +37,22 @@ const DateInput = ({
    );
 };
 
+DateInput.defaultProps = {
+   width: 16,
+};
+
 DateInput.propTypes = {
    input: PropTypes.shape({
       onBlur: PropTypes.func.isRequired,
       onChange: PropTypes.func.isRequired,
-      value: PropTypes.object,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
    }).isRequired,
    meta: PropTypes.shape({
       error: PropTypes.string,
       touched: PropTypes.bool.isRequired,
    }).isRequired,
    placeholder: PropTypes.string.isRequired,
+   width: PropTypes.number,
 };
 
 export default DateInput;

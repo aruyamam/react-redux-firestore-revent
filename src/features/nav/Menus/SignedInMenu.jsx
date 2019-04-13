@@ -20,6 +20,13 @@ const SignedInMenu = ({ signOut, profile, auth }) => (
 );
 
 SignedInMenu.propTypes = {
+   auth: PropTypes.shape({
+      uid: PropTypes.string.isRequired,
+   }).isRequired,
+   profile: PropTypes.shape({
+      displayName: PropTypes.string,
+      photoURL: PropTypes.string,
+   }).isRequired,
    signOut: PropTypes.func.isRequired,
 };
 

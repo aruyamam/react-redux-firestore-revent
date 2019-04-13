@@ -1,5 +1,4 @@
 const userDetailedQuery = ({ auth, userUid, match }) => {
-   // console.log(auth, userUid);
    if (userUid !== null) {
       return [
          {
@@ -23,6 +22,11 @@ const userDetailedQuery = ({ auth, userUid, match }) => {
    }
 
    return [
+      {
+         collection: 'users',
+         doc: auth.uid,
+         storeAs: 'profile',
+      },
       {
          collection: 'users',
          doc: auth.uid,

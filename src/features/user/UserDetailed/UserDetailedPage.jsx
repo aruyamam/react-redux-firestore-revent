@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firestoreConnect, isEmpty } from 'react-redux-firebase';
 import { Grid } from 'semantic-ui-react';
+import { toastr } from 'react-redux-toastr';
 import UserDetailedHeader from './UserDetailedHeader';
 import UserDetailedDescription from './UserDetailedDescription';
 import UserDetailedSidebar from './UserDetailedSidebar';
@@ -12,8 +13,11 @@ import UserDetailedEvents from './UserDetailedEvents';
 import userDetailedQuery from '../userQueries';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { followUser, getUserEvents, unfollowUser } from '../userActions';
+import { requestingPropType } from '../../../app/common/util/helpers';
 
-const mapState = ({ auth, async, events, firestore, firebase }, { match: { params } }) => {
+const mapState = ({
+   auth, async, events, firestore, firebase,
+}, { match: { params } }) => {
    let userUid = null;
    let profile = {};
 
@@ -33,7 +37,9 @@ const mapState = ({ auth, async, events, firestore, firebase }, { match: { param
       auth: firebase.auth,
       following: firestore.ordered.following,
       photos: firestore.ordered.photos,
-      requesting: firestore.status.requesting,
+      requesting: isEmpty(firestore.status.requesting)
+         ? { [`users/${params.id}`]: true }
+         : firestore.status.requesting,
    };
 };
 
@@ -45,46 +51,74 @@ const actions = {
 
 class UserDetailedPage extends Component {
    async componentDidMount() {
-      const { getUserEvents, userUid } = this.props;
-      await getUserEvents(userUid);
+      const {
+         firestore, history, getUserEvents, match,
+      } = this.props;
+      const user = await firestore.get(`users/${match.params.id}`);
+
+      if (!user.exists) {
+         toastr.error('Not Found', 'This is not the user you are looking for');
+         history.push('/error');
+      }
+
+      await getUserEvents(match.params.id);
    }
 
    changeTab = (e, data) => {
-      const { getUserEvents, userUid } = this.props;
-      getUserEvents(userUid, data.activeIndex);
-   }
+      const { getUserEvents, match } = this.props;
+      getUserEvents(match.params.id, data.activeIndex);
+   };
 
    render() {
       const {
-         auth, events, eventsLoading, followUser, following, match, photos, profile, requesting, unfollowUser,
+         auth,
+         events,
+         eventsLoading,
+         followUser,
+         following,
+         match,
+         photos,
+         profile,
+         requesting,
+         unfollowUser,
       } = this.props;
 
       const isFollowing = !isEmpty(following);
       const isCurrentUser = auth.uid === match.params.id;
-      const loading = Object.values(requesting).some(a => a === true);
+      const loading = requesting[`users/${match.params.id}`];
 
       if (loading) {
          return <LoadingComponent inverted />;
       }
 
-      return !isEmpty(profile) && (
-         <Grid>
-            <UserDetailedHeader profile={profile} />
-            <UserDetailedDescription profile={profile} />
-            <UserDetailedSidebar followUser={followUser} isFollowing={isFollowing} isCurrentUser={isCurrentUser} profile={profile} unfollowUser={unfollowUser} />
-            {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
-            <UserDetailedEvents
-               changeTab={this.changeTab}
-               events={events}
-               eventsLoading={eventsLoading}
-            />
-         </Grid>
+      return (
+         !isEmpty(profile) && (
+            <Grid>
+               <UserDetailedHeader profile={profile} />
+               <UserDetailedDescription profile={profile} />
+               <UserDetailedSidebar
+                  followUser={followUser}
+                  isFollowing={isFollowing}
+                  isCurrentUser={isCurrentUser}
+                  profile={profile}
+                  unfollowUser={unfollowUser}
+               />
+               {photos && photos.length > 0 && <UserDetailedPhotos photos={photos} />}
+               <UserDetailedEvents
+                  changeTab={this.changeTab}
+                  events={events}
+                  eventsLoading={eventsLoading}
+               />
+            </Grid>
+         )
       );
    }
 }
 
 UserDetailedPage.defaultProps = {
+   following: [],
    photos: [],
+   userUid: '',
 };
 
 UserDetailedPage.propTypes = {
@@ -93,22 +127,38 @@ UserDetailedPage.propTypes = {
    }).isRequired,
    events: PropTypes.arrayOf(PropTypes.object).isRequired,
    eventsLoading: PropTypes.bool.isRequired,
-   following: PropTypes.arrayOf(PropTypes.object).isRequired,
+   firestore: PropTypes.shape({
+      get: PropTypes.func.isRequired,
+   }).isRequired,
+   following: PropTypes.arrayOf(PropTypes.object),
    followUser: PropTypes.func.isRequired,
    getUserEvents: PropTypes.func.isRequired,
+   history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+   }).isRequired,
    match: PropTypes.shape({
       params: PropTypes.shape({
          id: PropTypes.string.isRequired,
       }).isRequired,
    }).isRequired,
    photos: PropTypes.arrayOf(PropTypes.object),
-   profile: PropTypes.object.isRequired,
-   requesting: PropTypes.object.isRequired,
+   profile: PropTypes.shape({
+      createdAt: PropTypes.object,
+      displayName: PropTypes.string,
+      gender: PropTypes.string,
+      isEmpty: PropTypes.bool,
+      isLoaded: PropTypes.bool,
+      photoURL: PropTypes.string,
+   }).isRequired,
+   requesting: requestingPropType,
    userUid: PropTypes.string,
    unfollowUser: PropTypes.func.isRequired,
 };
 
 export default compose(
-   connect(mapState, actions),
+   connect(
+      mapState,
+      actions,
+   ),
    firestoreConnect((auth, userUid, match) => userDetailedQuery(auth, userUid, match)),
 )(UserDetailedPage);

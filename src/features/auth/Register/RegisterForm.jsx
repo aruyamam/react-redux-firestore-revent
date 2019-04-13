@@ -45,7 +45,12 @@ const RegisterForm = ({
    </div>
 );
 
+RegisterForm.defaultProps = {
+   error: '',
+};
+
 RegisterForm.propTypes = {
+   error: PropTypes.string,
    handleSubmit: PropTypes.func.isRequired,
    registerUser: PropTypes.func.isRequired,
    invalid: PropTypes.bool.isRequired,

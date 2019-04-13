@@ -31,7 +31,6 @@ UserDetailedSidebar.propTypes = {
    isFollowing: PropTypes.bool.isRequired,
    profile: PropTypes.shape({
       displayName: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
       photoURL: PropTypes.string,
    }).isRequired,
    unfollowUser: PropTypes.func.isRequired,

@@ -35,7 +35,12 @@ const LoginForm = ({
    </Form>
 );
 
+LoginForm.defaultProps = {
+   error: '',
+};
+
 LoginForm.propTypes = {
+   error: PropTypes.string,
    handleSubmit: PropTypes.func.isRequired,
    login: PropTypes.func.isRequired,
    socialLogin: PropTypes.func.isRequired,
